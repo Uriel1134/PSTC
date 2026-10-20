@@ -1,0 +1,29 @@
+# dépendances
+/node_modules
+
+# build Next.js
+/.next/
+/out/
+
+# fichiers générés
+*.tsbuildinfo
+next-env.d.ts
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# environnement local
+.env*
+!.env.example
+
+# système
+.DS_Store
+Thumbs.db
+
+# documents internes de travail (racine uniquement, non destinés au dépôt public)
+/*.docx
+/*.pdf
+/Pstc ecobin MAJ (1).png
+/Pstc sarl 4++ (1).png
