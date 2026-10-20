@@ -3,6 +3,7 @@ import './globals.css';
 import { QuoteProvider } from '../context/QuoteContext';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://pstc-ecobin.com'),
   title: 'PSTC ECOBIN | Matériels de Salubrité, Bacs Roulants, Tri Sélectif & EPI - PSTC SARL',
   description: 'Fournisseur agréé de conteneurs de voirie, bacs roulants 120L à 1100L certifiés EN 840, poubelles médicales DASRI et équipements de protection individuelle au Bénin et en Afrique de l’Ouest.',
   keywords: [
