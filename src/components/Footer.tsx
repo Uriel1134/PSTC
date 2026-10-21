@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { Phone, Mail, MapPin, Clock, ShieldCheck, ArrowUpRight, Award, FileText, Download } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock } from 'lucide-react';
 import { COMPANY_INFO } from '../data/company';
 
 export default function Footer() {
@@ -10,13 +10,13 @@ export default function Footer() {
     <footer id="contact" className="footer-main">
       <div className="container">
         <div className="footer-grid">
-          {/* Colonne 1 : Entreprise Mère & Marque */}
+          {/* Colonne 1 : Entreprise Mère */}
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-              <div style={{ position: 'relative', width: '160px', height: '48px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
+              <div style={{ position: 'relative', width: '160px', height: '44px' }}>
                 <Image
-                  src="/images/logo-ecobin.png"
-                  alt="Logo PSTC ECOBIN"
+                  src="/images/logo-pstc-sarl.png"
+                  alt="Logo PSTC SARL"
                   fill
                   style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)' }}
                 />
@@ -24,72 +24,61 @@ export default function Footer() {
             </div>
 
             <p className="footer-about-text">
-              <strong>PSTC ECOBIN</strong> est la division de solutions professionnelles de collecte, d’hygiène, de tri sélectif et d’EPI développée par <strong>{COMPANY_INFO.parentCompany} ({COMPANY_INFO.parentCompanyFullName})</strong>.
+              <strong>{COMPANY_INFO.parentCompany} ({COMPANY_INFO.parentCompanyFullName})</strong> est une société multiservice de référence au Bénin : génie civil BTP, ingénierie réseaux &amp; télécoms, énergie solaire, négoce commercial, fournitures générales et gestion environnementale.
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: '0.82rem', color: 'var(--slate-400)', marginBottom: 16 }}>
               <div>{COMPANY_INFO.ifuNumber}</div>
               <div>{COMPANY_INFO.rccmNumber}</div>
             </div>
-
-            <a
-              href="/catalogue-pstc-ecobin.pdf"
-              download="Catalogue_PSTC_ECOBIN_20_pages.pdf"
-              className="btn btn-sm btn-outline-white"
-              style={{ padding: '8px 14px', fontSize: '0.82rem', gap: 6 }}
-              title="Télécharger le catalogue officiel complet"
-            >
-              <Download size={15} />
-              <span>Catalogue PDF (20 p.)</span>
-            </a>
           </div>
 
-          {/* Colonne 2 : Liens Rapides */}
+          {/* Colonne 2 : Les 4 Pôles Métiers */}
           <div>
-            <h4 className="footer-col-title">Navigation Métier</h4>
+            <h4 className="footer-col-title">Nos 4 Pôles Métiers</h4>
             <ul className="footer-links">
               <li>
-                <a href="#catalogue" className="footer-link">Bacs Roulants 2 Roues (30L-360L)</a>
+                <a href="/#prestations-techniques" className="footer-link">Pôle 01 : Prestations Techniques</a>
               </li>
               <li>
-                <a href="#catalogue" className="footer-link">Conteneurs Lourds 4 Roues (660L-1100L)</a>
+                <a href="/#solutions-commerciales" className="footer-link">Pôle 02 : Solutions Commerciales</a>
               </li>
               <li>
-                <a href="#guide-capacites" className="footer-link">Guide des Capacités & Sacs</a>
+                <a href="/#fournitures-consommables" className="footer-link">Pôle 03 : Fournitures &amp; Consommables</a>
               </li>
               <li>
-                <a href="#tri-selectif" className="footer-link">Charte du Tri Sélectif (4 Flux)</a>
+                <a href="/#gestion-environnementale" className="footer-link">Pôle 04 : Gestion Environnementale</a>
               </li>
               <li>
-                <a href="#processus-commande" className="footer-link">Processus de Commande B2B</a>
+                <a href="/#institutionnel" className="footer-link">À Propos de PSTC SARL</a>
               </li>
               <li>
-                <a href="#catalogue-pdf" className="footer-link">Téléchargement Catalogue PDF</a>
+                <a href="/#processus-commande" className="footer-link">Processus de Commande</a>
               </li>
             </ul>
           </div>
 
-          {/* Colonne 3 : Normes & Secteurs */}
+          {/* Colonne 3 : Domaines d’Intervention */}
           <div>
-            <h4 className="footer-col-title">Engagements & Secteurs</h4>
+            <h4 className="footer-col-title">Domaines d’Intervention</h4>
             <ul className="footer-links">
               <li>
-                <a href="#secteurs" className="footer-link">Collectivités & Mairies</a>
+                <a href="/#btp-travaux" className="footer-link">BTP, Forage &amp; Aménagement</a>
               </li>
               <li>
-                <a href="#secteurs" className="footer-link">Hôtels, Résidences & HORECA</a>
+                <a href="/#informatique-reseaux" className="footer-link">Câblage Réseaux &amp; Télécoms</a>
               </li>
               <li>
-                <a href="#secteurs" className="footer-link">Cliniques & Centres Hospitaliers</a>
+                <a href="/#energie-climatisation" className="footer-link">Énergie Solaire &amp; Climatisation</a>
               </li>
               <li>
-                <a href="#secteurs" className="footer-link">Industries & Chantiers BTP</a>
+                <a href="/#securite-surveillance" className="footer-link">Sécurité &amp; Vidéosurveillance</a>
               </li>
               <li>
-                <a href="#conformite" className="footer-link">Normes Européennes EN 840</a>
+                <a href="/#commerce-auto" className="footer-link">Flottes Automobiles &amp; Logistique</a>
               </li>
               <li>
-                <a href="#conformite" className="footer-link">Résistance UV & Climat Tropical</a>
+                <a href="/#hygiene-entretien" className="footer-link">Hygiène, Espaces Verts &amp; Salubrité</a>
               </li>
             </ul>
           </div>
@@ -137,11 +126,11 @@ export default function Footer() {
         {/* Ligne Inférieure Mentions Légales */}
         <div className="footer-bottom">
           <div>
-            © {new Date().getFullYear()} <strong>PSTC SARL</strong> — Tous droits réservés. Marque commerciale <strong>PSTC ECOBIN</strong>.
+            © {new Date().getFullYear()} <strong>PSTC SARL</strong> — Tous droits réservés. Prestation de Service Technique et Commerciale.
           </div>
           <div className="footer-legal-links">
             <span>Bénin • Togo • Côte d’Ivoire • Afrique de l’Ouest</span>
-            <span>Conformité RSE & Salubrité Publique</span>
+            <span>Conformité &amp; Marchés B2B</span>
           </div>
         </div>
       </div>

@@ -2,21 +2,13 @@
 
 import React from 'react';
 import Header from '../components/Header';
-import Hero from '../components/Hero';
+import HeroPSTC from '../components/HeroPSTC';
+import PSTCPolesSection from '../components/PSTCPolesSection';
 import InstitutionalIntro from '../components/InstitutionalIntro';
-import EngagementsSection from '../components/EngagementsSection';
-import FeaturedProductsSection from '../components/FeaturedProductsSection';
-import DownloadCatalogueSection from '../components/DownloadCatalogueSection';
-import SectorsSection from '../components/SectorsSection';
-import CapacitiesGuideSection from '../components/CapacitiesGuideSection';
-import SizingSimulator from '../components/SizingSimulator';
-import SortingGuideSection from '../components/SortingGuideSection';
-import ComplianceRSE from '../components/ComplianceRSE';
 import OrderProcessSection from '../components/OrderProcessSection';
 import Footer from '../components/Footer';
 import ProductModal from '../components/ProductModal';
 import QuoteDrawer from '../components/QuoteDrawer';
-import { PRODUCTS } from '../data/products';
 import { useQuote } from '../context/QuoteContext';
 
 export default function Home() {
@@ -28,64 +20,35 @@ export default function Home() {
     selectedProduct,
     setSelectedProduct,
     addToQuote,
-    addMultipleToQuote,
     updateQuantity,
     removeItem,
     clearQuote,
   } = useQuote();
 
-  // Filtre rapide depuis les secteurs
-  const handleQuickFilter = (keyword: string) => {
-    const found = PRODUCTS.find((p) => p.reference === keyword);
-    if (found) {
-      setSelectedProduct(found);
-    }
-  };
-
   return (
     <>
-      {/* Barre de navigation et En-tête officiel */}
-      <Header />
+      {/* Barre de navigation et En-tête officiel PSTC SARL */}
+      <Header activeNav="home" />
 
-      {/* Bannière d'Accueil & Positionnement */}
+      {/* Portail Mono-page Institutionnel PSTC SARL */}
       <main>
-        <Hero onOpenQuoteDrawer={openQuoteDrawer} />
+        {/* Grand Hero avec Docked Cards des 4 Pôles Métiers */}
+        <HeroPSTC onOpenQuoteDrawer={openQuoteDrawer} />
 
-        {/* Présentation du Groupe PSTC SARL et de la Marque */}
-        <InstitutionalIntro />
+        {/* Section Clé : Les 4 Pôles Métiers avec photos réelles, puces et fiches */}
+        <PSTCPolesSection onOpenQuoteDrawer={openQuoteDrawer} />
 
-        {/* 4 Engagements Fondateurs & Typologie de Clients Servis (Catalogue p. 2) */}
-        <EngagementsSection />
+        {/* À Propos de PSTC SARL : Synthétique, Aéré & Rigueur Fiscale/Technique */}
+        <InstitutionalIntro onOpenQuoteDrawer={openQuoteDrawer} />
 
-        {/* Sélection d'Équipements Phares (Accueil Épuré) */}
-        <FeaturedProductsSection />
-
-        {/* Espace Téléchargement du Catalogue Officiel PDF 20 Pages */}
-        <DownloadCatalogueSection />
-
-        {/* Solutions Métiers par Secteur */}
-        <SectorsSection onQuickFilter={handleQuickFilter} />
-
-        {/* Guide Pratique : Capacités des Bacs & Choix des Sacs (Catalogue p. 4) */}
-        <CapacitiesGuideSection />
-
-        {/* Outil de Dimensionnement & Simulateur B2B */}
-        <SizingSimulator onAddMultipleToQuote={addMultipleToQuote} />
-
-        {/* Charte du Tri Sélectif : Les 4 Flux Normalisés (Catalogue p. 18) */}
-        <SortingGuideSection />
-
-        {/* Conformité, Normes EN-840 et Durabilité Tropicale */}
-        <ComplianceRSE />
-
-        {/* Processus de Commande B2B en 4 Étapes (Catalogue p. 19) */}
+        {/* Processus de Cotation et Commande B2B PSTC SARL en 4 Étapes */}
         <OrderProcessSection onOpenQuoteDrawer={openQuoteDrawer} />
       </main>
 
-      {/* Pied de Page Institutionnel */}
+      {/* Pied de Page Institutionnel PSTC SARL */}
       <Footer />
 
-      {/* Modal Fiche Technique Produit */}
+      {/* Modal Fiche Technique Produit (si ouvert) */}
       <ProductModal
         product={selectedProduct}
         onClose={() => setSelectedProduct(null)}

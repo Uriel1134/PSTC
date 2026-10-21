@@ -150,10 +150,6 @@ export default function CataloguePage() {
 
             <div className="catalog-hero-grid">
               <div>
-                <span className="catalog-hero-tag">
-                  <ShieldCheck size={14} />
-                  <span>CONFORME EN 840 & NORMES INTERNATIONALES</span>
-                </span>
                 <h1 className="catalog-hero-title">
                   Catalogue Officiel des Équipements de Salubrité & Tri Sélectif
                 </h1>

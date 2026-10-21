@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
-import { X, Trash2, Send, Printer, Building, User, Phone, Mail, MapPin, FileCheck, CheckCircle2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import Link from 'next/link';
+import { X, Trash2, Send, Printer, Building, User, Phone, Mail, MapPin, FileCheck, CheckCircle2, ShoppingCart, MessageCircle } from 'lucide-react';
 import { Product } from '../data/products';
 import { COMPANY_INFO } from '../data/company';
 
@@ -35,8 +37,25 @@ export default function QuoteDrawer({
   const [city, setCity] = useState('Cotonou');
   const [notes, setNotes] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Bloquer le scroll d'arrière-plan quand le drawer est ouvert
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  if (!isOpen || !mounted) return null;
 
   // Calcul du nombre total d'articles
   const totalUnits = items.reduce((sum, item) => sum + item.quantity, 0);
@@ -194,8 +213,15 @@ export default function QuoteDrawer({
     }, 500);
   };
 
-  return (
-    <div className="drawer-backdrop" onClick={onClose}>
+  return createPortal(
+    <div
+      className="drawer-backdrop"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
       <div className="drawer-panel" onClick={(e) => e.stopPropagation()}>
         {/* Header Drawer */}
         <div className="drawer-header">
@@ -205,7 +231,15 @@ export default function QuoteDrawer({
               {items.length} produit{items.length > 1 ? 's' : ''} ({totalUnits} unité{totalUnits > 1 ? 's' : ''})
             </span>
           </div>
-          <button onClick={onClose} className="drawer-close-btn" aria-label="Fermer">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
+            className="drawer-close-btn"
+            aria-label="Fermer"
+          >
             <X size={22} />
           </button>
         </div>
@@ -213,17 +247,35 @@ export default function QuoteDrawer({
         {/* Corps Drawer */}
         <div className="drawer-body">
           {items.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--slate-500)' }}>
+            <div style={{ textAlign: 'center', padding: '50px 20px', color: 'var(--slate-500)' }}>
               <FileCheck size={48} style={{ margin: '0 auto 16px', opacity: 0.3 }} />
-              <h4 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--slate-800)', marginBottom: 6 }}>
-                Votre sélection est vide
+              <h4 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--slate-800)', marginBottom: 8 }}>
+                Votre sélection de catalogue est vide
               </h4>
-              <p style={{ fontSize: '0.88rem', marginBottom: 20 }}>
-                Parcourez le catalogue de 50 références ou utilisez notre simulateur pour ajouter des conteneurs, bacs et EPI à votre cotation.
+              <p style={{ fontSize: '0.88rem', color: 'var(--slate-600)', marginBottom: 24, lineHeight: 1.6 }}>
+                Le panier de cotation est réservé aux articles du <strong>Catalogue Officiel</strong>. Pour un projet de travaux BTP, réseaux, solaire ou négoce, contactez directement nos équipes sur WhatsApp.
               </p>
-              <button onClick={onClose} className="btn btn-primary btn-sm">
-                Consulter le Catalogue
-              </button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 360, margin: '0 auto' }}>
+                <Link
+                  href="/catalogue"
+                  onClick={onClose}
+                  className="btn btn-primary"
+                  style={{ justifyContent: 'center', padding: '12px 18px', fontWeight: 700 }}
+                >
+                  <ShoppingCart size={17} />
+                  <span>Consulter le Catalogue Produits</span>
+                </Link>
+                <a
+                  href={`https://wa.me/${COMPANY_INFO.whatsappNumber}?text=${encodeURIComponent("Bonjour PSTC SARL, je souhaite demander des informations et un devis pour un projet.")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-mobile-whatsapp-action"
+                  style={{ justifyContent: 'center', padding: '12px 18px' }}
+                >
+                  <MessageCircle size={17} />
+                  <span>Discuter sur WhatsApp Direct</span>
+                </a>
+              </div>
             </div>
           ) : (
             <>
@@ -405,6 +457,7 @@ export default function QuoteDrawer({
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

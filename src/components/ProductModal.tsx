@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { X, Check, ShoppingCart, ShieldCheck, Ruler, Scale, Box, Tag } from 'lucide-react';
 import { Product } from '../data/products';
@@ -19,16 +20,39 @@ export default function ProductModal({
   isAlreadyInQuote,
 }: ProductModalProps) {
   const [quantity, setQuantity] = useState(1);
+  const [mounted, setMounted] = useState(false);
 
-  if (!product) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (product) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [product]);
+
+  if (!product || !mounted) return null;
 
   const handleAdd = () => {
     onAddToQuote(product, quantity);
     onClose();
   };
 
-  return (
-    <div className="modal-backdrop" onClick={onClose}>
+  return createPortal(
+    <div
+      className="modal-backdrop"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <div>
@@ -207,6 +231,7 @@ export default function ProductModal({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

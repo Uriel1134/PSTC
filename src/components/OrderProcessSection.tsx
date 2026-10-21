@@ -1,54 +1,54 @@
 'use client';
 
 import React from 'react';
-import { Search, ClipboardList, Settings, CheckCircle2, FileText, ArrowRight, PhoneCall, Mail } from 'lucide-react';
+import { Search, ClipboardList, Settings, CheckCircle2, FileText, ArrowRight, PhoneCall, MessageCircle } from 'lucide-react';
 import { COMPANY_INFO } from '../data/company';
 
 interface OrderProcessSectionProps {
-  onOpenQuoteDrawer: () => void;
+  onOpenQuoteDrawer?: () => void;
 }
 
 export default function OrderProcessSection({ onOpenQuoteDrawer }: OrderProcessSectionProps) {
   const steps = [
     {
       num: '01',
-      title: 'Repérer les Modèles',
-      desc: 'Parcourez notre catalogue interactif en ligne ou notre catalogue PDF 20 pages pour identifier les références et contenants nécessaires.',
+      title: 'Expression du Besoin',
+      desc: 'Transmettez votre cahier des charges, liste d’équipements, bordereau de fournitures ou descriptif de chantier.',
       icon: Search,
-      highlight: 'Réf. techniques ou N° de visuel',
+      highlight: 'Cahier des charges ou liste d’articles',
     },
     {
       num: '02',
-      title: 'Indiquer les Quantités',
-      desc: 'Précisez le litrage souhaité (ex: 240L, 660L), les coloris de tri, les tailles des vêtements ou EPI et le lieu de livraison (Bénin ou sous-région).',
-      icon: ClipboardList,
-      highlight: 'Volumes, tailles & site de livraison',
+      title: 'Étude Technique & Sourcing',
+      desc: 'Nos équipes techniques et commerciales analysent la faisabilité, les spécifications techniques et les quantités requises.',
+      icon: Settings,
+      highlight: 'Dimensionnement & conformité des normes',
     },
     {
       num: '03',
-      title: 'Décrire les Usages & Exigences',
-      desc: 'Informez-nous sur le type d’établissement (hôpital DASRI, voirie, hôtel, industrie) et vos exigences particulières de personnalisation (marquage logo).',
-      icon: Settings,
-      highlight: 'Contraintes du site & personnalisation',
+      title: 'Offre Proforma Chiffrée',
+      desc: 'Nous vous délivrons un devis proforma officiel avec bordereau de prix unitaires, délais d’exécution et conditions de garantie.',
+      icon: ClipboardList,
+      highlight: 'Devis officiel transmis sous 24h à 48h',
     },
     {
       num: '04',
-      title: 'Validation de l’Offre Proforma',
-      desc: 'Notre service commercial vous transmet un devis proforma officiel avec délais de livraison garantis, certificat de conformité et conditions de règlement.',
+      title: 'Réalisation & Livraison',
+      desc: 'Déploiement des équipes sur chantier ou livraison sécurisée sur site avec procès-verbal de conformité.',
       icon: CheckCircle2,
-      highlight: 'Offre chiffrée sous 24h ouvrées',
+      highlight: 'Suivi rigoureux jusqu’à réception',
     },
   ];
 
   return (
     <section id="processus-commande" className="section section-order-process">
       <div className="container">
-        <div className="section-header">
+        <div className="section-header text-center max-w-3xl mx-auto">
           <h2 className="section-title">
-            Comment Préparer & Passer Votre Commande
+            Comment Collaborer Avec PSTC SARL
           </h2>
           <p className="section-subtitle">
-            Une procédure en 4 étapes claires, extraite de la page 19 de notre catalogue, pour faciliter la prise en charge rapide de vos demandes d’approvisionnement par la direction commerciale de PSTC SARL.
+            Un processus transparent et réactif en 4 étapes pour la prise en charge immédiate de vos projets de travaux, négoce et fournitures par notre direction commerciale.
           </p>
         </div>
 
@@ -80,28 +80,30 @@ export default function OrderProcessSection({ onOpenQuoteDrawer }: OrderProcessS
         <div className="order-cta-box">
           <div className="order-cta-content">
             <h3 className="order-cta-title">
-              Prêt à Dimensionner Vos Équipements de Salubrité ?
+              Vous Avez un Projet Technique ou un Marché à Pourvoir ?
             </h3>
             <p className="order-cta-desc">
-              Constituez votre sélection directement sur ce portail web en ajoutant les articles à votre devis proforma officiel, ou échangez directement avec notre direction commerciale pour un audit de site.
+              Soumettez votre demande de cotation directement en ligne ou sollicitez un rendez-vous avec nos chargés d'affaires pour une étude sur site.
             </p>
 
             <div className="order-cta-buttons">
-              <button
-                onClick={onOpenQuoteDrawer}
+              <a
+                href={`https://wa.me/${COMPANY_INFO.whatsappNumber}?text=${encodeURIComponent("Bonjour PSTC SARL, je souhaite demander une cotation proforma pour un projet technique / commercial.")}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="btn-order-cta-primary"
               >
-                <FileText size={18} />
-                <span>Constituer mon Devis Proforma en Ligne</span>
+                <MessageCircle size={18} />
+                <span>Demander un Devis via WhatsApp</span>
                 <ArrowRight size={17} />
-              </button>
+              </a>
 
               <a
                 href={`tel:${COMPANY_INFO.phoneCommercial}`}
                 className="btn-order-cta-secondary"
               >
                 <PhoneCall size={18} />
-                <span>Contacter la Direction : {COMPANY_INFO.phoneCommercial}</span>
+                <span>Direction Commerciale : {COMPANY_INFO.phoneCommercial}</span>
               </a>
             </div>
           </div>
