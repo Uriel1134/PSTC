@@ -36,7 +36,7 @@ export const PSTC_POLES: PSTCPole[] = [
         id: 'btp-travaux',
         title: 'Bâtiment, BTP & Travaux',
         subtitle: 'Génie civil & aménagement',
-        image: '/images/btp-travaux.jpg',
+        image: '/images/btp-travaux.png',
         iconName: 'Building2',
         tag: 'Travaux & Chantiers',
         bulletPoints: [

@@ -16,7 +16,7 @@ export default function Hero({ onOpenQuoteDrawer }: HeroProps) {
       <section className="hero-corporate">
         <div className="hero-corporate-bg">
           <Image
-            src="/images/btp-travaux.jpg"
+            src="/images/btp-travaux.png"
             alt="PSTC SARL - Prestation de Service Technique et Commerciale Bénin"
             fill
             sizes="100vw"

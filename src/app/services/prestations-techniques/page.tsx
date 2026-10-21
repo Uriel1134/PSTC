@@ -43,7 +43,7 @@ export default function PrestationsTechniquesPage() {
       id: 'btp-travaux',
       title: 'Bâtiment, BTP & Travaux',
       subtitle: 'Génie civil, réfection & aménagements portuaires',
-      image: '/images/btp-travaux.jpg',
+      image: '/images/btp-travaux.png',
       icon: Building2,
       points: [
         'Travaux de génie civil et constructions BTP',
