@@ -190,7 +190,7 @@ export const PSTC_POLES: PSTCPole[] = [
         id: 'fournitures-administratives',
         title: 'Fournitures Administratives & Scolaires',
         subtitle: 'Papeterie & classement',
-        image: '/images/fournitures-mobilier.jpg',
+        image: '/images/fournitures-consommables-bg.png',
         iconName: 'FileText',
         tag: 'Administration',
         bulletPoints: [

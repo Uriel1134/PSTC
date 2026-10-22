@@ -223,18 +223,18 @@ export default function FeaturedProductsSection() {
 
           <div className="catalog-explore-actions">
             <Link href="/catalogue" className="btn-explore-catalog-cta">
-              <span>Voir tout le catalogue (62 références)</span>
+              <span>Voir tout le catalogue (87 références)</span>
               <ArrowRight size={18} />
             </Link>
 
             <a
               href="/catalogue-pstc-ecobin.pdf"
-              download="Catalogue_PSTC_ECOBIN_20_pages.pdf"
+              download="Catalogue_PSTC_ECOBIN_21_pages.pdf"
               className="btn-explore-catalog-pdf"
               title="Télécharger le catalogue officiel en PDF"
             >
               <Download size={16} />
-              <span>Télécharger le PDF (20 p.)</span>
+              <span>Télécharger le PDF (21 p.)</span>
             </a>
           </div>
         </div>

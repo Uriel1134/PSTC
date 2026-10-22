@@ -43,7 +43,7 @@ export default function FournituresConsommablesPage() {
       id: 'fournitures-administratives',
       title: 'Fournitures Administratives & Scolaires',
       subtitle: 'Papeterie professionnelle, classement & archivage',
-      image: '/images/fournitures-mobilier.jpg',
+      image: '/images/fournitures-consommables-bg.png',
       icon: FileText,
       points: [
         'Papeterie professionnelle et ramettes de papier certifiées haute qualité',

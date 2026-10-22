@@ -34,7 +34,7 @@ export const SECTORS = [
     subtitle: 'Filière Déchets Médicaux & Risques Infectieux',
     icon: 'ShieldAlert',
     description: 'Poubelles jaunes étanches à pédale sans contact manuel, pictogramme Biohazard indélébile, gants nitrile chimio-résistants et désinfection.',
-    productsRecommended: ['LH-JT-15L', 'LH-JT-30L', 'LH-JT-50L', 'REF-SN01', 'REF-G12'],
+    productsRecommended: ['LH-JT-15L', 'LH-JT-30L', 'LH-JT-50L', 'REF-SN01', 'REF-G01'],
     badge: 'Norme Hospitalière',
   },
   {

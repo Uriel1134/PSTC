@@ -3,9 +3,10 @@
 import React from 'react';
 import Image from 'next/image';
 import { Download, CheckCircle2, Eye, Recycle, HardHat, TrafficCone } from 'lucide-react';
+import { PRODUCTS } from '../data/products';
 
 const PDF_URL = '/catalogue-pstc-ecobin.pdf';
-const PDF_FILENAME = 'Catalogue_PSTC_ECOBIN_20_pages.pdf';
+const PDF_FILENAME = 'Catalogue_PSTC_ECOBIN_21_pages.pdf';
 
 const FAMILIES = [
   {
@@ -35,7 +36,7 @@ export default function DownloadCatalogueSection() {
             <div className="download-catalogue-info">
               <h2 className="download-title">
                 Téléchargez le catalogue complet
-                <span className="download-title-sub">Édition 20 pages</span>
+                <span className="download-title-sub">Édition 21 pages</span>
               </h2>
 
               <p className="download-lead">
@@ -64,7 +65,7 @@ export default function DownloadCatalogueSection() {
                   title="Télécharger le fichier PDF sur votre appareil"
                 >
                   <Download size={18} />
-                  <span>Télécharger le PDF · 9,3 Mo</span>
+                  <span>Télécharger le PDF · 9,0 Mo</span>
                 </a>
 
                 <a
@@ -141,11 +142,11 @@ export default function DownloadCatalogueSection() {
               <dl className="catalog-doc-stats">
                 <div className="catalog-doc-stat">
                   <dt>Pages</dt>
-                  <dd>20</dd>
+                  <dd>21</dd>
                 </div>
                 <div className="catalog-doc-stat">
                   <dt>Références</dt>
-                  <dd>62</dd>
+                  <dd>{PRODUCTS.length}</dd>
                 </div>
                 <div className="catalog-doc-stat">
                   <dt>Familles</dt>

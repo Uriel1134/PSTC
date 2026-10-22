@@ -45,7 +45,7 @@ export default function CatalogSection({
         {/* En-tête de la section Catalogue */}
         <div className="section-header">
           <h2 className="section-title">
-            Notre Gamme Complète de Matériels & Équipements (50 Références)
+            Notre Gamme Complète de Matériels & Équipements ({PRODUCTS.length} Références)
           </h2>
           <p className="section-subtitle">
             Consultez les caractéristiques techniques détaillées, dimensions et normes de conformité. Ajoutez directement les articles souhaités pour constituer votre devis proforma officiel.
@@ -72,16 +72,22 @@ export default function CatalogSection({
 
           {/* Onglets des Catégories */}
           <div className="category-tabs">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat.id}
-                className={`category-tab-btn ${selectedCategory === cat.id ? 'active' : ''}`}
-                onClick={() => setSelectedCategory(cat.id)}
-              >
-                <span>{cat.label}</span>
-                <span className="tab-badge">{cat.count}</span>
-              </button>
-            ))}
+            {CATEGORIES.map((cat) => {
+              const count =
+                cat.id === 'all'
+                  ? PRODUCTS.length
+                  : PRODUCTS.filter((p) => p.category === cat.id).length;
+              return (
+                <button
+                  key={cat.id}
+                  className={`category-tab-btn ${selectedCategory === cat.id ? 'active' : ''}`}
+                  onClick={() => setSelectedCategory(cat.id)}
+                >
+                  <span>{cat.label}</span>
+                  <span className="tab-badge">{count}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 

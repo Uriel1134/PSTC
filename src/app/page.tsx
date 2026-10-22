@@ -6,6 +6,8 @@ import HeroPSTC from '../components/HeroPSTC';
 import PSTCPolesSection from '../components/PSTCPolesSection';
 import InstitutionalIntro from '../components/InstitutionalIntro';
 import OrderProcessSection from '../components/OrderProcessSection';
+import EcobinProductSection from '../components/EcobinProductSection';
+import CustomerReviewsSection from '../components/CustomerReviewsSection';
 import Footer from '../components/Footer';
 import ProductModal from '../components/ProductModal';
 import QuoteDrawer from '../components/QuoteDrawer';
@@ -35,14 +37,20 @@ export default function Home() {
         {/* Grand Hero avec Docked Cards des 4 Pôles Métiers */}
         <HeroPSTC onOpenQuoteDrawer={openQuoteDrawer} />
 
-        {/* Section Clé : Les 4 Pôles Métiers avec photos réelles, puces et fiches */}
-        <PSTCPolesSection onOpenQuoteDrawer={openQuoteDrawer} />
+        {/* Présentation d'ECOBINE : Marque & Gamme de Produits Phares de PSTC SARL */}
+        <EcobinProductSection onOpenQuoteDrawer={openQuoteDrawer} />
 
         {/* À Propos de PSTC SARL : Synthétique, Aéré & Rigueur Fiscale/Technique */}
         <InstitutionalIntro onOpenQuoteDrawer={openQuoteDrawer} />
 
+        {/* Section Clé : Les 4 Pôles Métiers - Carrousel Sobre & Minimaliste */}
+        <PSTCPolesSection onOpenQuoteDrawer={openQuoteDrawer} />
+
         {/* Processus de Cotation et Commande B2B PSTC SARL en 4 Étapes */}
         <OrderProcessSection onOpenQuoteDrawer={openQuoteDrawer} />
+
+        {/* Avis & Retours d'Expérience Clients Avant le Footer */}
+        <CustomerReviewsSection />
       </main>
 
       {/* Pied de Page Institutionnel PSTC SARL */}

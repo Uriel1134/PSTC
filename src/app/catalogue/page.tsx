@@ -154,24 +154,24 @@ export default function CataloguePage() {
                   Catalogue Officiel des Équipements de Salubrité & Tri Sélectif
                 </h1>
                 <p className="catalog-hero-subtitle">
-                  Consultez nos <strong>62 références professionnelles</strong> : bacs roulants 2 et 4 roues (30L à 1100L), bornes de tri sélectif, fûts DASRI sécurisés et équipements de protection individuelle (EPI). Ajoutez directement les articles pour constituer votre devis proforma officiel.
+                  Consultez nos <strong>{PRODUCTS.length} références professionnelles</strong> : bacs roulants 2 et 4 roues (30L à 1100L), bennes multibennes et ampliroll, bornes de tri sélectif, fûts DASRI sécurisés, matériels de nettoyage et équipements de protection individuelle (EPI). Ajoutez directement les articles pour constituer votre devis proforma officiel.
                 </p>
               </div>
 
               <div className="catalog-hero-cta-box">
                 <div className="catalog-hero-stat">
-                  <span className="stat-number">62</span>
+                  <span className="stat-number">{PRODUCTS.length}</span>
                   <span className="stat-text">Références en stock ou sur commande</span>
                 </div>
                 <div className="catalog-hero-buttons">
                   <a
                     href="/catalogue-pstc-ecobin.pdf"
-                    download="Catalogue_PSTC_ECOBIN_20_pages.pdf"
+                    download="Catalogue_PSTC_ECOBIN_21_pages.pdf"
                     className="btn btn-hero-pdf"
-                    title="Télécharger la version papier officielle 20 pages"
+                    title="Télécharger la version papier officielle 21 pages"
                   >
                     <Download size={15} />
-                    <span>Catalogue PDF (20 p.)</span>
+                    <span>Catalogue PDF (21 p.)</span>
                   </a>
                   <button onClick={openQuoteDrawer} className="btn btn-hero-quote">
                     <ShoppingCart size={15} />
@@ -239,6 +239,10 @@ export default function CataloguePage() {
                     <ul className="sidebar-category-list">
                       {CATEGORIES.map((cat) => {
                         const isActive = selectedCategory === cat.id;
+                        const catProductCount =
+                          cat.id === 'all'
+                            ? PRODUCTS.length
+                            : PRODUCTS.filter((p) => p.category === cat.id).length;
                         return (
                           <li key={cat.id}>
                             <button
@@ -249,7 +253,7 @@ export default function CataloguePage() {
                               }}
                             >
                               <span className="cat-label">{cat.label}</span>
-                              <span className="cat-count">{cat.count}</span>
+                              <span className="cat-count">{catProductCount}</span>
                             </button>
                           </li>
                         );

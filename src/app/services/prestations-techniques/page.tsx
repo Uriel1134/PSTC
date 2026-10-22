@@ -8,7 +8,6 @@ import {
   Network,
   SunMedium,
   ShieldAlert,
-  Sparkles,
   Printer,
   CheckCircle2,
   ArrowRight,
@@ -95,19 +94,6 @@ export default function PrestationsTechniquesPage() {
       ],
     },
     {
-      id: 'entretien-maintenance',
-      title: 'Entretien & Nettoyage Technique',
-      subtitle: 'Propreté des sites professionnels & espaces verts',
-      image: '/images/image copy 2.png',
-      icon: Sparkles,
-      points: [
-        'Entretien et nettoyage approfondi des bâtiments professionnels et sièges',
-        'Entretien paysager et tonte des espaces verts d’entreprises',
-        'Fourniture de produits d’entretien homologués et respectueux des normes',
-        'Protocoles sanitaires stricts pour sites administratifs et ERP',
-      ],
-    },
-    {
       id: 'impression-communication',
       title: 'Impression & Communication Visuelle',
       subtitle: 'Cachets professionnels, sérigraphie & signalétique',
@@ -171,7 +157,7 @@ export default function PrestationsTechniquesPage() {
           <div className="container">
             <div className="service-details-header">
               <h2 className="section-title">
-                Six Domaines de Compétences Techniques Intégrées
+                Cinq Domaines de Compétences Techniques Intégrées
               </h2>
               <p className="section-subtitle">
                 De la construction à la maintenance continue, découvrez l’ensemble de nos expertises opérationnelles.
