@@ -7,7 +7,6 @@ import {
   Sparkles,
   Trash2,
   Layers,
-  HardHat,
   CheckCircle2,
   ArrowRight,
   ChevronRight,
@@ -42,7 +41,7 @@ export default function GestionEnvironnementalePage() {
       id: 'hygiene-entretien',
       title: 'Hygiène & Produits d’Entretien',
       subtitle: 'Produits homologués, sacs haute densité & accessoires',
-      image: '/images/products/sacs-poubelle-noirs.png',
+      image: '/images/hygiene-produits-entretien.png',
       icon: Sparkles,
       points: [
         'Fournitures de produits d’entretien professionnels et désinfectants homologués',
@@ -55,7 +54,7 @@ export default function GestionEnvironnementalePage() {
       id: 'entretien-espaces',
       title: 'Entretien & Gestion des Espaces',
       subtitle: 'Espaces verts, aménagement paysager & cours extérieures',
-      image: '/images/hero-urban.jpg',
+      image: '/images/entretien-espaces-verts.png',
       icon: Sparkles,
       points: [
         'Nettoyage, désherbage et entretien périodique des espaces verts d’entreprises',
@@ -90,19 +89,6 @@ export default function GestionEnvironnementalePage() {
         'Conseil en dimensionnement et disposition stratégique des points de collecte',
       ],
     },
-    {
-      id: 'epi-securite',
-      title: 'Équipements de Protection Individuelle (EPI)',
-      subtitle: 'Sécurité et protection certifiée CE des équipes de terrain',
-      image: '/images/products/gilet-ja.png',
-      icon: HardHat,
-      points: [
-        'Gilets haute visibilité fluo avec bandes réfléchissantes certifiés EN 471',
-        'Casques de sécurité ventilés, lunettes de protection et masques respiratoires',
-        'Gants de manutention résistants aux coupures et gants nitrile étanches',
-        'Chaussures de sécurité coquées S3 antidérapantes et tenues de pluie imperméables',
-      ],
-    },
   ];
 
   return (
@@ -127,7 +113,7 @@ export default function GestionEnvironnementalePage() {
                 Solutions de Gestion Environnementale
               </h1>
               <p className="service-hero-lead">
-                Salubrité publique, entretien des espaces verts, bacs roulants certifiés EN 840, bornes de tri sélectif et équipements de protection individuelle pour les entreprises, mairies et établissements de santé.
+                Salubrité publique, entretien des espaces verts, bacs roulants certifiés EN 840 et solutions de tri sélectif pour les entreprises, mairies et établissements de santé.
               </p>
 
               <div className="service-hero-actions">
@@ -158,7 +144,7 @@ export default function GestionEnvironnementalePage() {
           <div className="container">
             <div className="service-details-header">
               <h2 className="section-title">
-                Cinq Domaines d’Hygiène, Salubrité &amp; Sécurité des Espaces
+                Quatre Domaines d’Hygiène, Salubrité &amp; Entretien des Espaces
               </h2>
               <p className="section-subtitle">
                 Des équipements conformes aux normes internationales les plus exigeantes pour préserver vos environnements et valoriser vos engagements RSE.

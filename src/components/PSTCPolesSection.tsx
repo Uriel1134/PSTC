@@ -33,9 +33,9 @@ const POLES: PoleItem[] = [
     image: '/images/btp-travaux.png',
     accentColor: '#004B93',
     overview:
-      'Bureau d’études, conduite de chantiers de génie civil, installations électriques, réseaux informatiques et maintenance multitechnique certifiée pour vos infrastructures au Bénin.',
+      'Bureau d’études, conduite de chantiers BTP, installations électriques, réseaux informatiques et maintenance multitechnique certifiée pour vos infrastructures.',
     domains: [
-      'Bâtiment & Génie Civil',
+      'Génie Civil, Bâtiment & Travaux Publics',
       'Réseaux & Télécoms',
       'Énergie Solaire & Froid',
       'Vidéosurveillance & Sécurité',

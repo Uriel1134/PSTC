@@ -40,8 +40,8 @@ export default function PrestationsTechniquesPage() {
   const services = [
     {
       id: 'btp-travaux',
-      title: 'Bâtiment, BTP & Travaux',
-      subtitle: 'Génie civil, réfection & aménagements portuaires',
+      title: 'Génie Civil, Bâtiment & Travaux Publics',
+      subtitle: 'Réfection & aménagements portuaires',
       image: '/images/btp-travaux.png',
       icon: Building2,
       points: [
@@ -127,10 +127,10 @@ export default function PrestationsTechniquesPage() {
 
             <div className="service-hero-content">
               <h1 className="service-hero-title">
-                Prestations Techniques &amp; Génie Civil
+                Prestations Techniques
               </h1>
               <p className="service-hero-lead">
-                Une équipe d’ingénieurs, techniciens et spécialistes pour concevoir, exécuter et maintenir vos chantiers BTP, infrastructures réseaux, installations solaires et dispositifs de sécurité au Bénin.
+                Une équipe d’ingénieurs, techniciens et spécialistes pour concevoir, exécuter et maintenir vos chantiers BTP, infrastructures réseaux, installations solaires et dispositifs de sécurité.
               </p>
 
               <div className="service-hero-actions">

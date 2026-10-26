@@ -223,7 +223,7 @@ export default function FeaturedProductsSection() {
 
           <div className="catalog-explore-actions">
             <Link href="/catalogue" className="btn-explore-catalog-cta">
-              <span>Voir tout le catalogue (87 références)</span>
+              <span>Voir tout le catalogue ({PRODUCTS.length} références)</span>
               <ArrowRight size={18} />
             </Link>
 

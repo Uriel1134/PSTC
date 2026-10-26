@@ -30,12 +30,12 @@ export const PSTC_POLES: PSTCPole[] = [
     iconName: 'Wrench',
     accentColor: '#004B93',
     overview:
-      'Une équipe d’ingénieurs et techniciens qualifiés pour vos chantiers BTP, installations électriques, infrastructures informatiques et maintenance multitechnique au Bénin.',
+      'Une équipe d’ingénieurs et techniciens qualifiés pour vos chantiers BTP, installations électriques, infrastructures informatiques et maintenance multitechnique.',
     items: [
       {
         id: 'btp-travaux',
-        title: 'Bâtiment, BTP & Travaux',
-        subtitle: 'Génie civil & aménagement',
+        title: 'Génie Civil, Bâtiment & Travaux Publics',
+        subtitle: 'Réfection & aménagements portuaires',
         image: '/images/btp-travaux.png',
         iconName: 'Building2',
         tag: 'Travaux & Chantiers',
@@ -180,17 +180,17 @@ export const PSTC_POLES: PSTCPole[] = [
     number: '03',
     title: 'Fournitures & Consommables',
     shortTitle: 'Fournitures B2B',
-    tagline: 'Bureautique, informatique, mobilier, médical et équipements énergétiques',
+    tagline: 'Bureautique, informatique, mobilier, médical, énergie et protection individuelle (EPI)',
     iconName: 'Boxes',
     accentColor: '#D97706',
     overview:
-      'Partenaire unique pour la dotation intégrale de vos bureaux, centres hospitaliers, administrations et chantiers avec bordereaux de prix unitaires transparents.',
+      'Partenaire unique pour la dotation intégrale de vos bureaux, centres hospitaliers, administrations et chantiers : papeterie, informatique, mobilier, biomédical, énergie et équipements de protection individuelle (EPI).',
     items: [
       {
         id: 'fournitures-administratives',
         title: 'Fournitures Administratives & Scolaires',
         subtitle: 'Papeterie & classement',
-        image: '/images/fournitures-consommables-bg.png',
+        image: '/images/fournitures-administratives-scolaires.png',
         iconName: 'FileText',
         tag: 'Administration',
         bulletPoints: [
@@ -218,7 +218,7 @@ export const PSTC_POLES: PSTCPole[] = [
         id: 'mobilier-bureau',
         title: 'Mobilier & Matériels de Bureau',
         subtitle: 'Ergonomie & aménagement',
-        image: '/images/fournitures-mobilier.jpg',
+        image: '/images/mobilier-materiels-bureau.png',
         iconName: 'Armchair',
         tag: 'Espaces de Travail',
         bulletPoints: [
@@ -232,7 +232,7 @@ export const PSTC_POLES: PSTCPole[] = [
         id: 'equipements-medicaux',
         title: 'Équipements Médicaux & Cliniques',
         subtitle: 'Dispositifs biomédicaux',
-        image: '/images/image copy 6.png',
+        image: '/images/materiels-equipements-medicaux.png',
         iconName: 'Stethoscope',
         tag: 'Santé & Hôpitaux',
         bulletPoints: [
@@ -246,7 +246,7 @@ export const PSTC_POLES: PSTCPole[] = [
         id: 'audiovisuel-telecom',
         title: 'Équipements Audiovisuels & Télécoms',
         subtitle: 'Salles de réunion & conférences',
-        image: '/images/reseaux-telecoms.jpg',
+        image: '/images/equipements-audiovisuels-telecoms.png',
         iconName: 'Video',
         tag: 'Audiovisuel',
         bulletPoints: [
@@ -260,7 +260,7 @@ export const PSTC_POLES: PSTCPole[] = [
         id: 'equipements-energetiques',
         title: 'Équipements Énergétiques',
         subtitle: 'Continuité de service électrique',
-        image: '/images/energie-solaire.jpg',
+        image: '/images/equipements-energetiques-secours.png',
         iconName: 'Zap',
         tag: 'Autonomie',
         bulletPoints: [
@@ -270,6 +270,20 @@ export const PSTC_POLES: PSTCPole[] = [
           'Batteries solaires stationnaires et accessoires',
         ],
       },
+      {
+        id: 'epi-securite',
+        title: 'Équipements de Protection Individuelle (EPI)',
+        subtitle: 'Sécurité du personnel sur le terrain',
+        image: '/images/products/gilet-ja.png',
+        iconName: 'HardHat',
+        tag: 'Norme CE & EN',
+        bulletPoints: [
+          'Gilets haute visibilité fluo avec bandes réfléchissantes',
+          'Casques de chantier ventilés et lunettes de sécurité',
+          'Gants anti-coupure et gants nitrile étanches',
+          'Chaussures de sécurité coquées S3 et tenues de pluie',
+        ],
+      },
     ],
   },
   {
@@ -277,17 +291,17 @@ export const PSTC_POLES: PSTCPole[] = [
     number: '04',
     title: 'Solutions de Gestion Environnementale',
     shortTitle: 'Environnement',
-    tagline: 'Hygiène, entretien des espaces verts, bacs de collecte et équipements de protection',
+    tagline: 'Hygiène, entretien des espaces verts, bacs de collecte et solutions de tri',
     iconName: 'Recycle',
     accentColor: '#059669',
     overview:
-      'Prestations intégrées de salubrité, entretien des espaces verts, fourniture de produits d’entretien, conteneurs normalisés et équipements de protection pour entreprises et collectivités.',
+      'Prestations intégrées de salubrité, entretien des espaces verts, fourniture de produits d’entretien, conteneurs normalisés et solutions de tri sélectif pour entreprises et collectivités.',
     items: [
       {
         id: 'hygiene-entretien',
         title: 'Hygiène & Produits d’Entretien',
         subtitle: 'Produits & matériels de propreté',
-        image: '/images/products/sacs-poubelle-noirs.png',
+        image: '/images/hygiene-produits-entretien.png',
         iconName: 'Sparkles',
         tag: 'Salubrité Urbaine',
         bulletPoints: [
@@ -301,7 +315,7 @@ export const PSTC_POLES: PSTCPole[] = [
         id: 'entretien-espaces',
         title: 'Entretien & Gestion des Espaces',
         subtitle: 'Propreté extérieure & espaces verts',
-        image: '/images/hero-urban.jpg',
+        image: '/images/entretien-espaces-verts.png',
         iconName: 'Sparkles',
         tag: 'Espaces & Paysage',
         bulletPoints: [
@@ -337,20 +351,6 @@ export const PSTC_POLES: PSTCPole[] = [
           'Coloris normalisés (Bleu, Jaune, Vert, Gris, Marron)',
           'Poubelles médicales DASRI à pédale (Biohazard)',
           'Accompagnement au dimensionnement de site',
-        ],
-      },
-      {
-        id: 'epi-securite',
-        title: 'Équipements de Protection Individuelle (EPI)',
-        subtitle: 'Sécurité du personnel sur le terrain',
-        image: '/images/products/gilet-ja.png',
-        iconName: 'HardHat',
-        tag: 'Norme CE & EN',
-        bulletPoints: [
-          'Gilets haute visibilité fluo avec bandes réfléchissantes',
-          'Casques de chantier ventilés et lunettes de sécurité',
-          'Gants anti-coupure et gants nitrile étanches',
-          'Chaussures de sécurité coquées S3 et tenues de pluie',
         ],
       },
     ],

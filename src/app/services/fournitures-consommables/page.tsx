@@ -10,6 +10,7 @@ import {
   Stethoscope,
   Video,
   Zap,
+  HardHat,
   CheckCircle2,
   ArrowRight,
   ChevronRight,
@@ -43,7 +44,7 @@ export default function FournituresConsommablesPage() {
       id: 'fournitures-administratives',
       title: 'Fournitures Administratives & Scolaires',
       subtitle: 'Papeterie professionnelle, classement & archivage',
-      image: '/images/fournitures-consommables-bg.png',
+      image: '/images/fournitures-administratives-scolaires.png',
       icon: FileText,
       points: [
         'Papeterie professionnelle et ramettes de papier certifiées haute qualité',
@@ -69,7 +70,7 @@ export default function FournituresConsommablesPage() {
       id: 'mobilier-bureau',
       title: 'Mobilier & Matériels de Bureau',
       subtitle: 'Agencement tertiaire, ergonomie & rangements',
-      image: '/images/fournitures-mobilier.jpg',
+      image: '/images/mobilier-materiels-bureau.png',
       icon: Armchair,
       points: [
         'Bureaux opérationnels, tables de réunion et cloisons modulaires',
@@ -82,7 +83,7 @@ export default function FournituresConsommablesPage() {
       id: 'equipements-medicaux',
       title: 'Matériels & Équipements Médicaux',
       subtitle: 'Dispositifs biomédicaux, consommables & mobilier clinique',
-      image: '/images/image copy 6.png',
+      image: '/images/materiels-equipements-medicaux.png',
       icon: Stethoscope,
       points: [
         'Appareils de diagnostic clinique, tensiomètres, stéthoscopes et balances',
@@ -95,7 +96,7 @@ export default function FournituresConsommablesPage() {
       id: 'audiovisuel-telecoms',
       title: 'Équipements Audiovisuels & Télécoms',
       subtitle: 'Visioconférence, sonorisation & téléphonie d’entreprise',
-      image: '/images/reseaux-telecoms.jpg',
+      image: '/images/equipements-audiovisuels-telecoms.png',
       icon: Video,
       points: [
         'Écrans professionnels, vidéoprojecteurs et barres de visioconférence 4K',
@@ -108,13 +109,26 @@ export default function FournituresConsommablesPage() {
       id: 'equipements-energetiques',
       title: 'Équipements Énergétiques & Secours',
       subtitle: 'Groupes électrogènes, onduleurs & régulateurs',
-      image: '/images/energie-solaire.jpg',
+      image: '/images/equipements-energetiques-secours.png',
       icon: Zap,
       points: [
         'Groupes électrogènes industriels insonorisés de 10 kVA à 500 kVA',
         'Onduleurs on-line double conversion haute capacité pour datacenters',
         'Régulateurs automatiques de tension (AVR) pour la protection des équipements',
         'Batteries stationnaires solaires et systèmes d’inverseurs automatiques',
+      ],
+    },
+    {
+      id: 'epi-securite',
+      title: 'Équipements de Protection Individuelle (EPI)',
+      subtitle: 'Sécurité et protection certifiée CE des équipes de terrain',
+      image: '/images/products/gilet-ja.png',
+      icon: HardHat,
+      points: [
+        'Gilets haute visibilité fluo avec bandes réfléchissantes certifiés EN 471',
+        'Casques de sécurité ventilés, lunettes de protection et masques respiratoires',
+        'Gants de manutention résistants aux coupures et gants nitrile étanches',
+        'Chaussures de sécurité coquées S3 antidérapantes et tenues de pluie imperméables',
       ],
     },
   ];
@@ -141,7 +155,7 @@ export default function FournituresConsommablesPage() {
                 Fournitures &amp; Consommables B2B
               </h1>
               <p className="service-hero-lead">
-                Un interlocuteur unique pour l’approvisionnement intégral de vos bureaux, administrations, hôpitaux et chantiers : papeterie, informatique, mobilier ergonomique, matériel biomédical et équipements énergétiques.
+                Un interlocuteur unique pour l’approvisionnement intégral de vos bureaux, administrations, hôpitaux et chantiers : papeterie, informatique, mobilier ergonomique, matériel biomédical, équipements énergétiques et équipements de protection individuelle (EPI).
               </p>
 
               <div className="service-hero-actions">
@@ -168,7 +182,7 @@ export default function FournituresConsommablesPage() {
           <div className="container">
             <div className="service-details-header">
               <h2 className="section-title">
-                Six Familles de Fournitures &amp; Équipements Professionnels
+                Sept Familles de Fournitures &amp; Équipements Professionnels
               </h2>
               <p className="section-subtitle">
                 Des références sélectionnées auprès des constructeurs certifiés avec garantie de conformité et livraison rapide.

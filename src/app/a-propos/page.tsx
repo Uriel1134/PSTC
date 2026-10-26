@@ -81,14 +81,14 @@ export default function AProposPage() {
     {
       num: '03',
       title: 'Fournitures & Consommables',
-      desc: 'Papeterie, informatique bureautique, mobilier de bureau, matériel biomédical et équipements énergétiques.',
+      desc: 'Papeterie, informatique bureautique, mobilier de bureau, matériel biomédical, énergie et équipements de protection individuelle (EPI).',
       href: '/services/fournitures-consommables',
       icon: Boxes,
     },
     {
       num: '04',
       title: 'Gestion Environnementale',
-      desc: 'Hygiène, espaces verts, bacs roulants certifiés EN 840, tri sélectif et équipements de protection individuelle (EPI).',
+      desc: 'Hygiène, espaces verts, bacs roulants certifiés EN 840 et solutions de tri sélectif.',
       href: '/services/gestion-environnementale',
       icon: Recycle,
     },
