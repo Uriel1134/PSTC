@@ -218,7 +218,7 @@ export const PSTC_POLES: PSTCPole[] = [
         id: 'mobilier-bureau',
         title: 'Mobilier & Matériels de Bureau',
         subtitle: 'Ergonomie & aménagement',
-        image: '/images/mobilier-materiels-bureau.png',
+        image: '/images/presentation-mobilier-bureau.png',
         iconName: 'Armchair',
         tag: 'Espaces de Travail',
         bulletPoints: [
@@ -274,7 +274,7 @@ export const PSTC_POLES: PSTCPole[] = [
         id: 'epi-securite',
         title: 'Équipements de Protection Individuelle (EPI)',
         subtitle: 'Sécurité du personnel sur le terrain',
-        image: '/images/products/gilet-ja.png',
+        image: '/images/presentation-epi.png',
         iconName: 'HardHat',
         tag: 'Norme CE & EN',
         bulletPoints: [

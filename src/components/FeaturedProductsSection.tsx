@@ -9,14 +9,14 @@ import { useQuote } from '../context/QuoteContext';
 
 // 8 Références phares représentatives de la gamme PSTC ECOBIN
 const FEATURED_IDS = [
-  'lh-hw-120h',    // Bac 120L 2 Roues
-  'lh-hw-240d',    // Bac 240L 2 Roues (Best-seller)
-  'lh-hw-660a',    // Conteneur 660L 4 Roues
-  'lh-hw-1100a',   // Conteneur 1100L 4 Roues
-  'tri-pro-3f',     // Station Tri 3 Flux
-  'dasri-240-sec', // Bac Médical DASRI 240L
-  'int-auto-50l',  // Poubelle Automatique Inox 50L
-  'epi-gil-hv',    // Gilet Haute Visibilité EPI
+  'poubelle-roulante-hdpe',     // Poubelle roulante 100L, 120L & 240L
+  'poubelle-plastique-hdpe',    // Poubelle plastique 80L
+  'conteneur-industriel-hdpe',  // Conteneur industriel 660L & 1100L
+  'lh-stjt-60l',                // Poubelle de tri 60L
+  'lh-jt-15l',                  // Poubelle Médicale DASRI 15L
+  'lh-sac-pro',                 // Sac poubelle PE
+  'epi-ja',                     // Gilet Haute Visibilité EPI
+  'epi-casque-h01-bleu',        // Casque de Sécurité Chantier
 ];
 
 const TABS = [
@@ -109,6 +109,27 @@ export default function FeaturedProductsSection() {
                   {product.standard && (
                     <div className="product-norm-badge">{product.standard}</div>
                   )}
+                  {product.availableSizes && (
+                    <div style={{
+                      position: 'absolute',
+                      bottom: 8,
+                      left: 8,
+                      right: 8,
+                      backgroundColor: 'rgba(43, 138, 62, 0.92)',
+                      color: '#ffffff',
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      padding: '4px 8px',
+                      borderRadius: 'var(--radius-sm)',
+                      backdropFilter: 'blur(4px)',
+                      textAlign: 'center',
+                      letterSpacing: '0.01em',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                      zIndex: 2,
+                    }}>
+                      Tailles : {product.availableSizes}
+                    </div>
+                  )}
                 </div>
 
                 {/* Corps de la Carte */}
@@ -119,6 +140,12 @@ export default function FeaturedProductsSection() {
 
                   {/* Table des Spécifications synthétique */}
                   <div className="specs-table">
+                    {product.availableSizes && (
+                      <div className="spec-row" style={{ backgroundColor: 'rgba(43, 138, 62, 0.08)', borderRadius: 4, padding: '2px 6px', margin: '2px -6px' }}>
+                        <span className="spec-name" style={{ color: 'var(--pstc-green-800)', fontWeight: 700 }}>Tailles dispo :</span>
+                        <span className="spec-value" style={{ fontWeight: 800, color: 'var(--pstc-green-800)' }}>{product.availableSizes}</span>
+                      </div>
+                    )}
                     {product.capacity && (
                       <div className="spec-row">
                         <span className="spec-name">Capacité :</span>

@@ -47,6 +47,20 @@ export default function CataloguePage() {
   const [sortBy, setSortBy] = useState<string>('default');
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState<boolean>(false);
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const cat = params.get('category') || params.get('cat');
+      const search = params.get('search') || params.get('q');
+      if (cat) {
+        setSelectedCategory(cat);
+      }
+      if (search) {
+        setSearchQuery(search);
+      }
+    }
+  }, []);
+
   const quoteItemIds = useMemo(() => quoteItems.map((item) => item.product.id), [quoteItems]);
 
   // Extraire les litrages numériques pour le tri
@@ -61,7 +75,10 @@ export default function CataloguePage() {
     return PRODUCTS.filter((product) => {
       // 1. Catégorie
       const matchCategory =
-        selectedCategory === 'all' || product.category === selectedCategory;
+        selectedCategory === 'all' ||
+        product.category === selectedCategory ||
+        (selectedCategory === 'epi' &&
+          (product.category === 'epi-protection' || product.category === 'epi-vetements'));
 
       // 2. Recherche textuelle
       const q = searchQuery.toLowerCase().trim();
@@ -69,6 +86,7 @@ export default function CataloguePage() {
         !q ||
         product.name.toLowerCase().includes(q) ||
         product.reference.toLowerCase().includes(q) ||
+        (product.supplierRef && product.supplierRef.toLowerCase().includes(q)) ||
         product.categoryLabel.toLowerCase().includes(q) ||
         product.description.toLowerCase().includes(q) ||
         product.material.toLowerCase().includes(q) ||
@@ -131,7 +149,14 @@ export default function CataloguePage() {
     setSortBy('default');
   };
 
-  const activeCategoryObject = CATEGORIES.find((c) => c.id === selectedCategory);
+  const activeCategoryObject =
+    selectedCategory === 'epi'
+      ? {
+          id: 'epi',
+          label: 'Équipements de Protection Individuelle (EPI)',
+          count: PRODUCTS.filter((p) => p.category === 'epi-protection' || p.category === 'epi-vetements').length,
+        }
+      : CATEGORIES.find((c) => c.id === selectedCategory);
 
   return (
     <>
@@ -510,6 +535,12 @@ export default function CataloguePage() {
                               loading="lazy"
                             />
                             <div className="product-ref-badge">{product.reference}</div>
+                            {product.availableSizes && (
+                              <div style={{ position: 'absolute', bottom: 10, left: 10, backgroundColor: 'rgba(15, 23, 42, 0.88)', color: '#ffffff', fontSize: '0.72rem', fontWeight: 700, padding: '3px 8px', borderRadius: 4, backdropFilter: 'blur(4px)', display: 'inline-flex', alignItems: 'center', gap: 4, zIndex: 2 }}>
+                                <span>Tailles :</span>
+                                <span style={{ color: '#86EFAC' }}>{product.availableSizes}</span>
+                              </div>
+                            )}
                             {product.standard && (
                               <div className="product-norm-badge">{product.standard}</div>
                             )}
@@ -519,16 +550,26 @@ export default function CataloguePage() {
                           <div className="product-body">
                             <span className="product-category-label">{product.categoryLabel}</span>
                             <h3 className="product-name">{product.name}</h3>
+                            {product.supplierRef && (
+                              <div style={{ fontSize: '0.78rem', color: 'var(--slate-500)', marginTop: -2, marginBottom: 8, fontWeight: 500 }}>
+                                Réf. fournisseur : {product.supplierRef}
+                              </div>
+                            )}
                             <p className="product-description">{product.description}</p>
 
                             {/* Spécifications Techniques */}
                             <div className="specs-table">
-                              {product.capacity && (
+                              {product.availableSizes ? (
+                                <div className="spec-row" style={{ backgroundColor: 'var(--pstc-green-50)', padding: '4px 8px', borderRadius: 4 }}>
+                                  <span className="spec-name" style={{ color: 'var(--pstc-green-800)', fontWeight: 700 }}>Tailles disponibles :</span>
+                                  <span className="spec-value" style={{ color: 'var(--pstc-green-800)', fontWeight: 800 }}>{product.availableSizes}</span>
+                                </div>
+                              ) : product.capacity ? (
                                 <div className="spec-row">
                                   <span className="spec-name">Capacité :</span>
                                   <span className="spec-value">{product.capacity}</span>
                                 </div>
-                              )}
+                              ) : null}
                               <div className="spec-row">
                                 <span className="spec-name">Dimensions :</span>
                                 <span className="spec-value">{product.dimensions}</span>

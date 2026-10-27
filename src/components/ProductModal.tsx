@@ -60,9 +60,16 @@ export default function ProductModal({
             <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--slate-900)' }}>
               {product.name}
             </h3>
-            <span style={{ fontSize: '0.85rem', color: 'var(--pstc-blue-700)', fontWeight: 700 }}>
-              Réf. Usine : {product.reference}
-            </span>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', marginTop: 4 }}>
+              <span style={{ fontSize: '0.85rem', color: 'var(--pstc-blue-700)', fontWeight: 700 }}>
+                Réf. : {product.reference}
+              </span>
+              {product.supplierRef && (
+                <span style={{ fontSize: '0.82rem', color: 'var(--slate-500)', fontWeight: 500 }}>
+                  • Réf. fournisseur : {product.supplierRef}
+                </span>
+              )}
+            </div>
           </div>
           <button
             onClick={onClose}
@@ -90,6 +97,26 @@ export default function ProductModal({
                   {product.standard}
                 </div>
               )}
+              {product.availableSizes && (
+                <div style={{
+                  position: 'absolute',
+                  bottom: 12,
+                  left: 12,
+                  backgroundColor: 'rgba(43, 138, 62, 0.92)',
+                  color: '#ffffff',
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
+                  padding: '4px 10px',
+                  borderRadius: '999px',
+                  backdropFilter: 'blur(4px)',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4
+                }}>
+                  Tailles : {product.availableSizes}
+                </div>
+              )}
             </div>
 
             {/* Fiche Technique Détaillée */}
@@ -99,6 +126,14 @@ export default function ProductModal({
               </p>
 
               <div className="specs-table" style={{ marginBottom: 18 }}>
+                {product.availableSizes && (
+                  <div className="spec-row" style={{ backgroundColor: 'rgba(43, 138, 62, 0.08)', borderRadius: 6, padding: '6px 8px' }}>
+                    <span className="spec-name" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--pstc-green-800)', fontWeight: 700 }}>
+                      <Box size={14} /> Tailles disponibles
+                    </span>
+                    <span className="spec-value" style={{ fontWeight: 800, color: 'var(--pstc-green-800)' }}>{product.availableSizes}</span>
+                  </div>
+                )}
                 {product.capacity && (
                   <div className="spec-row">
                     <span className="spec-name" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>

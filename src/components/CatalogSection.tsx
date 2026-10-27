@@ -30,6 +30,7 @@ export default function CatalogSection({
         !q ||
         product.name.toLowerCase().includes(q) ||
         product.reference.toLowerCase().includes(q) ||
+        (product.supplierRef && product.supplierRef.toLowerCase().includes(q)) ||
         product.categoryLabel.toLowerCase().includes(q) ||
         product.description.toLowerCase().includes(q) ||
         product.material.toLowerCase().includes(q) ||
@@ -131,16 +132,48 @@ export default function CatalogSection({
                     {product.standard && (
                       <div className="product-norm-badge">{product.standard}</div>
                     )}
+                    {product.availableSizes && (
+                      <div style={{
+                        position: 'absolute',
+                        bottom: 8,
+                        left: 8,
+                        right: 8,
+                        backgroundColor: 'rgba(43, 138, 62, 0.92)',
+                        color: '#ffffff',
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        padding: '4px 8px',
+                        borderRadius: 'var(--radius-sm)',
+                        backdropFilter: 'blur(4px)',
+                        textAlign: 'center',
+                        letterSpacing: '0.01em',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                        zIndex: 2,
+                      }}>
+                        Tailles : {product.availableSizes}
+                      </div>
+                    )}
                   </div>
 
                   {/* Corps de la Carte */}
                   <div className="product-body">
                     <span className="product-category-label">{product.categoryLabel}</span>
                     <h3 className="product-name">{product.name}</h3>
+                    {product.supplierRef && (
+                      <div style={{ fontSize: '0.78rem', color: 'var(--slate-500)', marginTop: -2, marginBottom: 8, fontWeight: 500 }}>
+                        Réf. fournisseur : {product.supplierRef}
+                      </div>
+                    )}
                     <p className="product-description">{product.description}</p>
 
                     {/* Table des Spécifications */}
                     <div className="specs-table">
+                      {product.availableSizes && (
+                        <div className="spec-row" style={{ backgroundColor: 'rgba(43, 138, 62, 0.08)', borderRadius: 4, padding: '2px 6px', margin: '2px -6px' }}>
+                          <span className="spec-name" style={{ color: 'var(--pstc-green-800)', fontWeight: 700 }}>Tailles dispo :</span>
+                          <span className="spec-value" style={{ fontWeight: 800, color: 'var(--pstc-green-800)' }}>{product.availableSizes}</span>
+                        </div>
+                      )}
                       {product.capacity && (
                         <div className="spec-row">
                           <span className="spec-name">Capacité :</span>

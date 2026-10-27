@@ -70,7 +70,7 @@ export default function FournituresConsommablesPage() {
       id: 'mobilier-bureau',
       title: 'Mobilier & Matériels de Bureau',
       subtitle: 'Agencement tertiaire, ergonomie & rangements',
-      image: '/images/mobilier-materiels-bureau.png',
+      image: '/images/presentation-mobilier-bureau.png',
       icon: Armchair,
       points: [
         'Bureaux opérationnels, tables de réunion et cloisons modulaires',
@@ -122,7 +122,7 @@ export default function FournituresConsommablesPage() {
       id: 'epi-securite',
       title: 'Équipements de Protection Individuelle (EPI)',
       subtitle: 'Sécurité et protection certifiée CE des équipes de terrain',
-      image: '/images/products/gilet-ja.png',
+      image: '/images/presentation-epi.png',
       icon: HardHat,
       points: [
         'Gilets haute visibilité fluo avec bandes réfléchissantes certifiés EN 471',
@@ -207,7 +207,7 @@ export default function FournituresConsommablesPage() {
 
                     <div className="service-domain-body">
                       <div className="domain-heading">
-                        <div className="domain-icon-box" style={{ color: '#D97706', backgroundColor: 'rgba(217, 119, 6, 0.1)' }}>
+                        <div className="domain-icon-box" style={{ color: '#2B8A3E', backgroundColor: 'rgba(43, 138, 62, 0.1)' }}>
                           <Icon size={20} />
                         </div>
                         <div>
@@ -225,7 +225,18 @@ export default function FournituresConsommablesPage() {
                         ))}
                       </ul>
 
-                      <div className="domain-card-footer">
+                      <div className="domain-card-footer" style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                        {item.id === 'epi-securite' && (
+                          <Link
+                            href="/catalogue?category=epi"
+                            className="btn-card-quote"
+                            style={{ backgroundColor: '#2B8A3E', color: '#ffffff' }}
+                          >
+                            <HardHat size={14} />
+                            <span>Découvrir le Catalogue EPI</span>
+                            <ArrowRight size={14} />
+                          </Link>
+                        )}
                         <a
                           href={`https://wa.me/${COMPANY_INFO.whatsappNumber}?text=${encodeURIComponent(`Bonjour PSTC SARL, je souhaite demander une cotation pour les fournitures suivantes : *${item.title}*.\nMerci de me recontacter.`)}`}
                           target="_blank"
@@ -243,6 +254,86 @@ export default function FournituresConsommablesPage() {
               })}
             </div>
 
+            {/* Encart Découverte des Gammes d'EPI */}
+            <div
+              className="epi-discovery-banner"
+              style={{
+                marginTop: 48,
+                marginBottom: 48,
+                padding: '36px 40px',
+                borderRadius: 'var(--radius-xl, 16px)',
+                background: 'linear-gradient(135deg, #002244 0%, #003366 45%, #1B5E20 100%)',
+                color: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 32,
+                flexWrap: 'wrap',
+                border: '1px solid rgba(72, 187, 120, 0.25)',
+                boxShadow: '0 20px 45px -15px rgba(0, 34, 68, 0.5)',
+              }}
+            >
+              <div style={{ maxWidth: 660 }}>
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '6px 14px',
+                    borderRadius: 999,
+                    backgroundColor: 'rgba(43, 138, 62, 0.25)',
+                    border: '1px solid rgba(72, 187, 120, 0.4)',
+                    fontSize: '0.82rem',
+                    fontWeight: 700,
+                    color: '#86EFAC',
+                    marginBottom: 12,
+                  }}
+                >
+                  <HardHat size={16} />
+                  <span>SÉCURITÉ &amp; PROTECTION DU PERSONNEL</span>
+                </div>
+                <h3
+                  style={{
+                    fontSize: '1.65rem',
+                    fontWeight: 800,
+                    color: '#ffffff',
+                    marginBottom: 10,
+                    lineHeight: 1.3,
+                  }}
+                >
+                  Découvrez nos Gammes Complètes d'EPI
+                </h3>
+                <p style={{ fontSize: '0.98rem', color: '#CBD5E1', lineHeight: 1.6, margin: 0 }}>
+                  Casques de chantier, gilets haute visibilité, gants anticoupure, combinaisons de protection et accessoires homologués CE : consultez l'ensemble de nos références directement dans le catalogue.
+                </p>
+              </div>
+
+              <div>
+                <Link
+                  href="/catalogue?category=epi"
+                  className="btn-corp-primary"
+                  style={{
+                    backgroundColor: '#2B8A3E',
+                    color: '#ffffff',
+                    fontWeight: 800,
+                    padding: '16px 28px',
+                    borderRadius: 'var(--radius-md, 10px)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 12,
+                    fontSize: '1.02rem',
+                    textDecoration: 'none',
+                    boxShadow: '0 10px 25px -5px rgba(43, 138, 62, 0.55)',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <HardHat size={20} />
+                  <span>Découvrir les gammes d'EPI</span>
+                  <ArrowRight size={18} />
+                </Link>
+              </div>
+            </div>
+
             {/* Bannière d'Action */}
             <div className="service-bottom-cta">
               <div className="service-cta-text">
@@ -250,6 +341,14 @@ export default function FournituresConsommablesPage() {
                 <p>Envoyez-nous votre liste d'articles ou bordereau quantitatif estimatif : nous vous transmettons notre meilleure offre sous 24h.</p>
               </div>
               <div className="service-cta-btns">
+                <Link
+                  href="/catalogue?category=epi"
+                  className="btn-about-call"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
+                >
+                  <HardHat size={16} />
+                  <span>Catalogue EPI</span>
+                </Link>
                 <a
                   href={`https://wa.me/${COMPANY_INFO.whatsappNumber}?text=${encodeURIComponent("Bonjour PSTC SARL, je souhaite transmettre une liste de fournitures pour une cotation proforma.")}`}
                   target="_blank"
