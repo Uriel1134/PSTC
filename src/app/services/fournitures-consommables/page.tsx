@@ -228,7 +228,7 @@ export default function FournituresConsommablesPage() {
                       <div className="domain-card-footer" style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                         {item.id === 'epi-securite' && (
                           <Link
-                            href="/catalogue?category=epi"
+                            href="/catalogue?gamme=epi"
                             className="btn-card-quote"
                             style={{ backgroundColor: '#2B8A3E', color: '#ffffff' }}
                           >
@@ -310,7 +310,7 @@ export default function FournituresConsommablesPage() {
 
               <div>
                 <Link
-                  href="/catalogue?category=epi"
+                  href="/catalogue?gamme=epi"
                   className="btn-corp-primary"
                   style={{
                     backgroundColor: '#2B8A3E',
@@ -342,7 +342,7 @@ export default function FournituresConsommablesPage() {
               </div>
               <div className="service-cta-btns">
                 <Link
-                  href="/catalogue?category=epi"
+                  href="/catalogue?gamme=epi"
                   className="btn-about-call"
                   style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
                 >

@@ -126,7 +126,7 @@ export default function GestionEnvironnementalePage() {
                   <MessageCircle size={17} />
                   <span>Demander un Devis Salubrité (WhatsApp)</span>
                 </a>
-                <Link href="/catalogue" className="btn-corp-secondary">
+                <Link href="/catalogue?gamme=ecobin" className="btn-corp-secondary">
                   <ShoppingCart size={16} />
                   <span>Acheter des Bacs (Catalogue)</span>
                 </Link>
@@ -189,7 +189,7 @@ export default function GestionEnvironnementalePage() {
 
                       <div className="domain-card-footer">
                         {item.title.toLowerCase().includes('bac') || item.title.toLowerCase().includes('tri') ? (
-                          <Link href="/catalogue" className="btn-card-quote">
+                          <Link href="/catalogue?gamme=ecobin" className="btn-card-quote">
                             <ShoppingCart size={14} />
                             <span>Voir les bacs au catalogue</span>
                             <ArrowRight size={14} />

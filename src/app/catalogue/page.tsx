@@ -17,6 +17,8 @@ import {
   Download,
   ChevronRight,
   Sparkles,
+  Recycle,
+  HardHat,
 } from 'lucide-react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
@@ -25,6 +27,11 @@ import QuoteDrawer from '../../components/QuoteDrawer';
 import { PRODUCTS, CATEGORIES, Product } from '../../data/products';
 import { COMPANY_INFO } from '../../data/company';
 import { useQuote } from '../../context/QuoteContext';
+
+type GammeScope = 'all' | 'ecobin' | 'epi';
+
+const isEpiCategory = (cat: string) =>
+  cat === 'epi-protection' || cat === 'epi-vetements' || cat === 'signalisation-urgence' || cat === 'epi';
 
 export default function CataloguePage() {
   const {
@@ -40,6 +47,7 @@ export default function CataloguePage() {
     clearQuote,
   } = useQuote();
 
+  const [gammeScope, setGammeScope] = useState<GammeScope>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedStandard, setSelectedStandard] = useState<string>('all');
@@ -52,14 +60,78 @@ export default function CataloguePage() {
       const params = new URLSearchParams(window.location.search);
       const cat = params.get('category') || params.get('cat');
       const search = params.get('search') || params.get('q');
-      if (cat) {
+      const gammeParam = params.get('gamme') || params.get('scope');
+
+      if (gammeParam === 'epi' || cat === 'epi' || (cat && isEpiCategory(cat))) {
+        setGammeScope('epi');
+        setSelectedCategory(cat && cat !== 'epi' ? cat : 'all');
+      } else if (gammeParam === 'ecobin') {
+        setGammeScope('ecobin');
+        setSelectedCategory(cat || 'all');
+      } else if (cat) {
         setSelectedCategory(cat);
       }
+
       if (search) {
         setSearchQuery(search);
       }
     }
   }, []);
+
+  const handleGammeChange = (scope: GammeScope) => {
+    setGammeScope(scope);
+    setSelectedCategory('all');
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      if (scope === 'all') {
+        url.searchParams.delete('gamme');
+        url.searchParams.delete('category');
+      } else {
+        url.searchParams.set('gamme', scope);
+        url.searchParams.delete('category');
+      }
+      window.history.pushState({}, '', url.toString());
+    }
+  };
+
+  const totalEcobin = useMemo(
+    () => PRODUCTS.filter((p) => !isEpiCategory(p.category)).length,
+    []
+  );
+  const totalEpi = useMemo(
+    () => PRODUCTS.filter((p) => isEpiCategory(p.category)).length,
+    []
+  );
+
+  const displayedCategories = useMemo(() => {
+    if (gammeScope === 'epi') {
+      const epiCats = CATEGORIES.filter((c) => isEpiCategory(c.id));
+      return [
+        { id: 'all', label: 'Tous les EPI & Sécurité', count: totalEpi },
+        ...epiCats.map((c) => ({
+          id: c.id,
+          label: c.label,
+          count: PRODUCTS.filter((p) => p.category === c.id).length,
+        })),
+      ];
+    }
+    if (gammeScope === 'ecobin') {
+      const ecobinCats = CATEGORIES.filter((c) => c.id !== 'all' && !isEpiCategory(c.id));
+      return [
+        { id: 'all', label: 'Toutes les références ECOBIN', count: totalEcobin },
+        ...ecobinCats.map((c) => ({
+          id: c.id,
+          label: c.label,
+          count: PRODUCTS.filter((p) => p.category === c.id).length,
+        })),
+      ];
+    }
+    return CATEGORIES.map((c) => ({
+      id: c.id,
+      label: c.label,
+      count: c.id === 'all' ? PRODUCTS.length : PRODUCTS.filter((p) => p.category === c.id).length,
+    }));
+  }, [gammeScope, totalEcobin, totalEpi]);
 
   const quoteItemIds = useMemo(() => quoteItems.map((item) => item.product.id), [quoteItems]);
 
@@ -70,54 +142,63 @@ export default function CataloguePage() {
     return match ? parseInt(match[1], 10) : 0;
   };
 
-  // Filtrage combiné (catégorie + recherche + norme + volume)
+  // Filtrage combiné (gamme + catégorie + recherche + norme + volume)
   const filteredProducts = useMemo(() => {
     return PRODUCTS.filter((product) => {
-      // 1. Catégorie
+      // 0. Filtrage par Gamme (ECOBIN vs EPI vs ALL)
+      const isEpi = isEpiCategory(product.category);
+      if (gammeScope === 'epi' && !isEpi) {
+        return false;
+      }
+      if (gammeScope === 'ecobin' && isEpi) {
+        return false;
+      }
+
+      // 1. Catégorie spécifique
       const matchCategory =
         selectedCategory === 'all' ||
         product.category === selectedCategory ||
-        (selectedCategory === 'epi' &&
-          (product.category === 'epi-protection' || product.category === 'epi-vetements'));
+        (selectedCategory === 'epi' && isEpi);
+
+      if (!matchCategory) return false;
 
       // 2. Recherche textuelle
       const q = searchQuery.toLowerCase().trim();
-      const matchQuery =
-        !q ||
-        product.name.toLowerCase().includes(q) ||
-        product.reference.toLowerCase().includes(q) ||
-        (product.supplierRef && product.supplierRef.toLowerCase().includes(q)) ||
-        product.categoryLabel.toLowerCase().includes(q) ||
-        product.description.toLowerCase().includes(q) ||
-        product.material.toLowerCase().includes(q) ||
-        product.applications.some((app) => app.toLowerCase().includes(q));
+      if (q) {
+        const matchQuery =
+          product.name.toLowerCase().includes(q) ||
+          product.reference.toLowerCase().includes(q) ||
+          (product.supplierRef && product.supplierRef.toLowerCase().includes(q)) ||
+          product.categoryLabel.toLowerCase().includes(q) ||
+          product.description.toLowerCase().includes(q) ||
+          product.material.toLowerCase().includes(q) ||
+          product.applications.some((app) => app.toLowerCase().includes(q));
+        if (!matchQuery) return false;
+      }
 
       // 3. Norme
-      let matchStandard = true;
       if (selectedStandard === 'en-840') {
-        matchStandard = !!product.standard && product.standard.includes('EN 840');
+        if (!product.standard || !product.standard.includes('EN 840')) return false;
       } else if (selectedStandard === 'dasri') {
-        matchStandard =
+        const isDasri =
           product.category === 'medical-dasri' ||
           (!!product.standard && product.standard.toLowerCase().includes('dasri'));
+        if (!isDasri) return false;
       } else if (selectedStandard === 'ce') {
-        matchStandard = !!product.standard && product.standard.includes('CE');
+        if (!product.standard || !product.standard.includes('CE')) return false;
       }
 
       // 4. Volume / Capacité
-      let matchVolume = true;
-      const volNum = getCapacityNumber(product.capacity);
-      if (selectedVolume === 'small') {
-        matchVolume = volNum > 0 && volNum <= 100;
-      } else if (selectedVolume === 'standard') {
-        matchVolume = volNum >= 120 && volNum <= 360;
-      } else if (selectedVolume === 'large') {
-        matchVolume = volNum >= 660;
+      if (selectedVolume !== 'all') {
+        const volNum = getCapacityNumber(product.capacity);
+        if (selectedVolume === 'small' && !(volNum > 0 && volNum <= 100)) return false;
+        if (selectedVolume === 'standard' && !(volNum >= 120 && volNum <= 360)) return false;
+        if (selectedVolume === 'large' && !(volNum >= 660)) return false;
       }
 
-      return matchCategory && matchQuery && matchStandard && matchVolume;
+      return true;
     });
-  }, [selectedCategory, searchQuery, selectedStandard, selectedVolume]);
+  }, [gammeScope, selectedCategory, searchQuery, selectedStandard, selectedVolume]);
 
   // Tri des produits filtrés
   const sortedProducts = useMemo(() => {
@@ -149,14 +230,19 @@ export default function CataloguePage() {
     setSortBy('default');
   };
 
-  const activeCategoryObject =
-    selectedCategory === 'epi'
-      ? {
-          id: 'epi',
-          label: 'Équipements de Protection Individuelle (EPI)',
-          count: PRODUCTS.filter((p) => p.category === 'epi-protection' || p.category === 'epi-vetements').length,
-        }
-      : CATEGORIES.find((c) => c.id === selectedCategory);
+  const activeToolbarTitle = useMemo(() => {
+    if (selectedCategory === 'all') {
+      if (gammeScope === 'epi') return 'Gamme Équipements de Protection Individuelle (EPI)';
+      if (gammeScope === 'ecobin') return 'Gamme Salubrité, Bacs & Conteneurs ECOBIN';
+      return 'Toutes les références professionnelles';
+    }
+    const found = displayedCategories.find((c) => c.id === selectedCategory);
+    return found ? found.label : selectedCategory;
+  }, [selectedCategory, gammeScope, displayedCategories]);
+
+  const activeCategoryObject = useMemo(() => {
+    return displayedCategories.find((c) => c.id === selectedCategory);
+  }, [displayedCategories, selectedCategory]);
 
   return (
     <>
@@ -175,18 +261,44 @@ export default function CataloguePage() {
 
             <div className="catalog-hero-grid">
               <div>
+                <span className="catalog-hero-tag">
+                  <ShieldCheck size={14} />
+                  <span>
+                    {gammeScope === 'epi'
+                      ? 'PROTECTION DU PERSONNEL & SÉCURITÉ DE CHANTIER'
+                      : gammeScope === 'ecobin'
+                      ? 'SALUBRITÉ URBAINE, BACS & TRI SÉLECTIF'
+                      : 'PSTC SARL • CATALOGUE PROFESSIONNEL B2B'}
+                  </span>
+                </span>
                 <h1 className="catalog-hero-title">
-                  Catalogue Officiel des Équipements de Salubrité & Tri Sélectif
+                  {gammeScope === 'epi'
+                    ? 'Catalogue des Équipements de Protection Individuelle (EPI)'
+                    : gammeScope === 'ecobin'
+                    ? 'Catalogue Officiel de la Gamme ECOBIN'
+                    : 'Catalogue Officiel PSTC : Salubrité, Hygiène & Protection Professionnelle'}
                 </h1>
                 <p className="catalog-hero-subtitle">
-                  Consultez nos <strong>{PRODUCTS.length} références professionnelles</strong> : bacs roulants 2 et 4 roues (30L à 1100L), bennes multibennes et ampliroll, bornes de tri sélectif, fûts DASRI sécurisés, matériels de nettoyage et équipements de protection individuelle (EPI). Ajoutez directement les articles pour constituer votre devis proforma officiel.
+                  {gammeScope === 'epi'
+                    ? "Consultez l'ensemble de nos références EPI certifiées CE & EN : casques de chantier, gilets et vêtements haute visibilité, gants de précision et anticoupure, chaussures de sécurité et équipements de signalisation d'urgence."
+                    : gammeScope === 'ecobin'
+                    ? "Consultez nos références professionnelles de gestion des déchets et salubrité : bacs roulants 2 et 4 roues normalisés EN 840 (80L à 1100L), conteneurs lourds, stations de tri sélectif, fûts DASRI, poubelles d'intérieur et matériels d'hygiène urbaine."
+                    : `Consultez nos ${PRODUCTS.length} références professionnelles : bacs roulants 2 et 4 roues (80L à 1100L), bornes de tri sélectif, fûts DASRI sécurisés, matériels de nettoyage et équipements de protection individuelle (EPI).`}
                 </p>
               </div>
 
               <div className="catalog-hero-cta-box">
                 <div className="catalog-hero-stat">
-                  <span className="stat-number">{PRODUCTS.length}</span>
-                  <span className="stat-text">Références en stock ou sur commande</span>
+                  <span className="stat-number">
+                    {gammeScope === 'epi' ? totalEpi : gammeScope === 'ecobin' ? totalEcobin : PRODUCTS.length}
+                  </span>
+                  <span className="stat-text">
+                    {gammeScope === 'epi'
+                      ? 'Références EPI certifiées'
+                      : gammeScope === 'ecobin'
+                      ? 'Références ECOBIN'
+                      : 'Références en stock ou commande'}
+                  </span>
                 </div>
                 <div className="catalog-hero-buttons">
                   <a
@@ -211,6 +323,39 @@ export default function CataloguePage() {
         {/* Section Principale avec Sidebar à Gauche */}
         <section className="section catalog-content-section">
           <div className="container">
+            {/* Sélecteur de Gamme Principal */}
+            <div className="gamme-switch-wrapper">
+              <div className="gamme-switch-pills">
+                <button
+                  type="button"
+                  className={`gamme-switch-pill ${gammeScope === 'ecobin' ? 'active ecobin' : ''}`}
+                  onClick={() => handleGammeChange('ecobin')}
+                >
+                  <Recycle size={17} />
+                  <span>Gamme Salubrité ECOBIN</span>
+                  <span className="gamme-pill-badge">{totalEcobin}</span>
+                </button>
+                <button
+                  type="button"
+                  className={`gamme-switch-pill ${gammeScope === 'epi' ? 'active epi' : ''}`}
+                  onClick={() => handleGammeChange('epi')}
+                >
+                  <HardHat size={17} />
+                  <span>Gamme Sécurité &amp; EPI</span>
+                  <span className="gamme-pill-badge">{totalEpi}</span>
+                </button>
+                <button
+                  type="button"
+                  className={`gamme-switch-pill ${gammeScope === 'all' ? 'active' : ''}`}
+                  onClick={() => handleGammeChange('all')}
+                >
+                  <Sparkles size={16} />
+                  <span>Toutes les Gammes</span>
+                  <span className="gamme-pill-badge">{PRODUCTS.length}</span>
+                </button>
+              </div>
+            </div>
+
             <div className="catalog-layout">
               {/* ========================================================
                   SIDEBAR À GAUCHE (Catégories, Filtres & Recherche)
@@ -262,12 +407,8 @@ export default function CataloguePage() {
                       <h3 className="sidebar-widget-title">Catégories de Produits</h3>
                     </div>
                     <ul className="sidebar-category-list">
-                      {CATEGORIES.map((cat) => {
+                      {displayedCategories.map((cat) => {
                         const isActive = selectedCategory === cat.id;
-                        const catProductCount =
-                          cat.id === 'all'
-                            ? PRODUCTS.length
-                            : PRODUCTS.filter((p) => p.category === cat.id).length;
                         return (
                           <li key={cat.id}>
                             <button
@@ -278,7 +419,7 @@ export default function CataloguePage() {
                               }}
                             >
                               <span className="cat-label">{cat.label}</span>
-                              <span className="cat-count">{catProductCount}</span>
+                              <span className="cat-count">{cat.count}</span>
                             </button>
                           </li>
                         );
@@ -415,7 +556,7 @@ export default function CataloguePage() {
                 <div className="catalog-toolbar">
                   <div className="toolbar-left">
                     <h2 className="toolbar-category-title">
-                      {activeCategoryObject?.label || 'Tous les produits'}
+                      {activeToolbarTitle}
                     </h2>
                     <span className="toolbar-counter">
                       <strong>{sortedProducts.length}</strong> référence{sortedProducts.length > 1 ? 's' : ''} trouvée{sortedProducts.length > 1 ? 's' : ''}

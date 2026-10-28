@@ -46,7 +46,7 @@ export default function EcobinProductSection({ onOpenQuoteDrawer }: EcobinProduc
 
             <div className="ecobin-spotlight-actions">
               <Link
-                href="/catalogue"
+                href="/catalogue?gamme=ecobin"
                 className="btn-spotlight-primary"
                 aria-label="Voir le catalogue des bacs et conteneurs Ecobin"
               >
