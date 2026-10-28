@@ -78,7 +78,7 @@ export default function Footer() {
                 <a href="/#commerce-auto" className="footer-link">Flottes Automobiles &amp; Logistique</a>
               </li>
               <li>
-                <a href="/#hygiene-entretien" className="footer-link">Hygiène, Espaces Verts &amp; Salubrité</a>
+                <a href="/#hygiene-entretien" className="footer-link">Hygiène, Entretien de Bâtiments &amp; Salubrité</a>
               </li>
             </ul>
           </div>

@@ -142,7 +142,7 @@ export default function HeroPSTC({ onOpenQuoteDrawer }: HeroPSTCProps) {
               <div className="docked-card-content">
                 <span className="docked-card-category">Pôle 04 • Salubrité</span>
                 <h3 className="docked-card-title">Gestion Environnementale</h3>
-                <p className="docked-card-desc">Hygiène, espaces verts, bacs de voirie &amp; EPI.</p>
+                <p className="docked-card-desc">Hygiène, entretien de bâtiments &amp; bacs de voirie.</p>
                 <span className="docked-card-link">
                   Voir la page dédiée <ArrowRight size={14} />
                 </span>

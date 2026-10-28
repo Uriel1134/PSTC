@@ -291,11 +291,11 @@ export const PSTC_POLES: PSTCPole[] = [
     number: '04',
     title: 'Solutions de Gestion Environnementale',
     shortTitle: 'Environnement',
-    tagline: 'Hygiène, entretien des espaces verts, bacs de collecte et solutions de tri',
+    tagline: 'Hygiène, entretien de bâtiments, bacs de collecte et solutions de tri',
     iconName: 'Recycle',
     accentColor: '#059669',
     overview:
-      'Prestations intégrées de salubrité, entretien des espaces verts, fourniture de produits d’entretien, conteneurs normalisés et solutions de tri sélectif pour entreprises et collectivités.',
+      'Prestations intégrées de salubrité, entretien de bâtiments, fourniture de produits d’entretien, conteneurs normalisés et solutions de tri sélectif pour entreprises et collectivités.',
     items: [
       {
         id: 'hygiene-entretien',
@@ -312,17 +312,17 @@ export const PSTC_POLES: PSTCPole[] = [
         ],
       },
       {
-        id: 'entretien-espaces',
-        title: 'Entretien & Gestion des Espaces',
-        subtitle: 'Propreté extérieure & espaces verts',
-        image: '/images/entretien-espaces-verts.png',
-        iconName: 'Sparkles',
-        tag: 'Espaces & Paysage',
+        id: 'entretien-batiments',
+        title: 'Entretien & Nettoyage de Bâtiments',
+        subtitle: 'Locaux professionnels & surfaces commerciales',
+        image: '/images/entretien-nettoyage-batiments.png',
+        iconName: 'Building2',
+        tag: 'Locaux & Bâtiments',
         bulletPoints: [
-          'Nettoyage et entretien des espaces verts',
-          'Aménagement paysager pour entreprises et résidences',
-          'Tonte, désherbage et embellissement des extérieurs',
-          'Entretien périodique de cours et parkings',
+          'Nettoyage et entretien régulier de bureaux et sièges d’entreprises',
+          'Remise en état après travaux, décapage et vitrerie haute technicité',
+          'Désinfection et propreté intégrale des locaux professionnels',
+          'Assainissement périodique des parties communes, halls et parkings',
         ],
       },
       {

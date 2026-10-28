@@ -69,6 +69,9 @@ export default function CataloguePage() {
         setGammeScope('ecobin');
         setSelectedCategory(cat || 'all');
       } else if (cat) {
+        if (cat === 'hygiene' || cat === 'materiel-nettoyage' || cat === 'hygiene-sanitaire') {
+          setGammeScope('ecobin');
+        }
         setSelectedCategory(cat);
       }
 
@@ -126,11 +129,21 @@ export default function CataloguePage() {
         })),
       ];
     }
-    return CATEGORIES.map((c) => ({
-      id: c.id,
-      label: c.label,
-      count: c.id === 'all' ? PRODUCTS.length : PRODUCTS.filter((p) => p.category === c.id).length,
-    }));
+    const nonEpi = CATEGORIES.filter((c) => c.id !== 'all' && !isEpiCategory(c.id));
+    const epi = CATEGORIES.filter((c) => isEpiCategory(c.id));
+    return [
+      { id: 'all', label: 'Toutes les catégories', count: PRODUCTS.length },
+      ...nonEpi.map((c) => ({
+        id: c.id,
+        label: c.label,
+        count: PRODUCTS.filter((p) => p.category === c.id).length,
+      })),
+      ...epi.map((c) => ({
+        id: c.id,
+        label: c.label,
+        count: PRODUCTS.filter((p) => p.category === c.id).length,
+      })),
+    ];
   }, [gammeScope, totalEcobin, totalEpi]);
 
   const quoteItemIds = useMemo(() => quoteItems.map((item) => item.product.id), [quoteItems]);
@@ -155,10 +168,14 @@ export default function CataloguePage() {
       }
 
       // 1. Catégorie spécifique
+      const isHygieneProduct =
+        product.category === 'materiel-nettoyage' || product.category === 'hygiene-sanitaire';
+
       const matchCategory =
         selectedCategory === 'all' ||
         product.category === selectedCategory ||
-        (selectedCategory === 'epi' && isEpi);
+        (selectedCategory === 'epi' && isEpi) ||
+        (selectedCategory === 'hygiene' && isHygieneProduct);
 
       if (!matchCategory) return false;
 
@@ -203,7 +220,15 @@ export default function CataloguePage() {
   // Tri des produits filtrés
   const sortedProducts = useMemo(() => {
     const list = [...filteredProducts];
-    if (sortBy === 'ref-asc') {
+    if (sortBy === 'default') {
+      list.sort((a, b) => {
+        const aIsEpi = isEpiCategory(a.category);
+        const bIsEpi = isEpiCategory(b.category);
+        if (aIsEpi && !bIsEpi) return 1;
+        if (!aIsEpi && bIsEpi) return -1;
+        return 0;
+      });
+    } else if (sortBy === 'ref-asc') {
       list.sort((a, b) => a.reference.localeCompare(b.reference));
     } else if (sortBy === 'name-asc') {
       list.sort((a, b) => a.name.localeCompare(b.name));
@@ -236,11 +261,22 @@ export default function CataloguePage() {
       if (gammeScope === 'ecobin') return 'Gamme Salubrité, Bacs & Conteneurs ECOBIN';
       return 'Toutes les références professionnelles';
     }
+    if (selectedCategory === 'hygiene') return 'Hygiène, Produits d’Entretien & Nettoyage';
     const found = displayedCategories.find((c) => c.id === selectedCategory);
     return found ? found.label : selectedCategory;
   }, [selectedCategory, gammeScope, displayedCategories]);
 
   const activeCategoryObject = useMemo(() => {
+    if (selectedCategory === 'hygiene') {
+      const hygieneCount = PRODUCTS.filter(
+        (p) => p.category === 'materiel-nettoyage' || p.category === 'hygiene-sanitaire'
+      ).length;
+      return {
+        id: 'hygiene',
+        label: 'Hygiène & Produits d’Entretien',
+        count: hygieneCount,
+      };
+    }
     return displayedCategories.find((c) => c.id === selectedCategory);
   }, [displayedCategories, selectedCategory]);
 

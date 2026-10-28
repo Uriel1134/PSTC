@@ -88,7 +88,7 @@ export default function AProposPage() {
     {
       num: '04',
       title: 'Gestion Environnementale',
-      desc: 'Hygiène, espaces verts, bacs roulants certifiés EN 840 et solutions de tri sélectif.',
+      desc: 'Hygiène, entretien de bâtiments, bacs roulants certifiés EN 840 et solutions de tri sélectif.',
       href: '/services/gestion-environnementale',
       icon: Recycle,
     },

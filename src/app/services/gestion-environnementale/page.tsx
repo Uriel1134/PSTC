@@ -14,6 +14,7 @@ import {
   Phone,
   ShoppingCart,
   MessageCircle,
+  Building2,
 } from 'lucide-react';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
@@ -51,16 +52,16 @@ export default function GestionEnvironnementalePage() {
       ],
     },
     {
-      id: 'entretien-espaces',
-      title: 'Entretien & Gestion des Espaces',
-      subtitle: 'Espaces verts, aménagement paysager & cours extérieures',
-      image: '/images/entretien-espaces-verts.png',
-      icon: Sparkles,
+      id: 'entretien-batiments',
+      title: 'Entretien & Nettoyage de Bâtiments',
+      subtitle: 'Locaux professionnels, bureaux, sièges sociaux & surfaces commerciales',
+      image: '/images/entretien-nettoyage-batiments.png',
+      icon: Building2,
       points: [
-        'Nettoyage, désherbage et entretien périodique des espaces verts d’entreprises',
-        'Conception et aménagement paysager pour sièges sociaux et résidences',
-        'Élagage sécurisé et tonte d’espaces extérieurs et cours d’usines',
-        'Balayage et assainissement régulier des voiries intérieures et parkings',
+        'Nettoyage approfondi et entretien régulier de bureaux et sièges d’entreprises',
+        'Remise en état après travaux, décapage et vitrerie haute technicité',
+        'Désinfection, dépoussiérage et propreté intégrale des espaces tertiaires',
+        'Assainissement, gestion des déchets courants et maintenance de propreté',
       ],
     },
     {
@@ -113,7 +114,7 @@ export default function GestionEnvironnementalePage() {
                 Solutions de Gestion Environnementale
               </h1>
               <p className="service-hero-lead">
-                Salubrité publique, entretien des espaces verts, bacs roulants certifiés EN 840 et solutions de tri sélectif pour les entreprises, mairies et établissements de santé.
+                Salubrité, hygiène professionnelle, entretien de bâtiments, bacs roulants certifiés EN 840 et solutions de tri sélectif pour les entreprises, administrations et établissements de santé.
               </p>
 
               <div className="service-hero-actions">
@@ -187,25 +188,39 @@ export default function GestionEnvironnementalePage() {
                         ))}
                       </ul>
 
-                      <div className="domain-card-footer">
-                        {item.title.toLowerCase().includes('bac') || item.title.toLowerCase().includes('tri') ? (
-                          <Link href="/catalogue?gamme=ecobin" className="btn-card-quote">
+                      <div className="domain-card-footer" style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                        {item.id === 'hygiene-entretien' && (
+                          <Link
+                            href="/catalogue?gamme=ecobin&category=hygiene"
+                            className="btn-card-quote"
+                            style={{ backgroundColor: '#2B8A3E', color: '#ffffff' }}
+                          >
+                            <Sparkles size={14} />
+                            <span>Voir les produits d’hygiène &amp; entretien</span>
+                            <ArrowRight size={14} />
+                          </Link>
+                        )}
+                        {(item.title.toLowerCase().includes('bac') || item.title.toLowerCase().includes('tri')) && (
+                          <Link
+                            href="/catalogue?gamme=ecobin"
+                            className="btn-card-quote"
+                            style={{ backgroundColor: '#004B93', color: '#ffffff' }}
+                          >
                             <ShoppingCart size={14} />
                             <span>Voir les bacs au catalogue</span>
                             <ArrowRight size={14} />
                           </Link>
-                        ) : (
-                          <a
-                            href={`https://wa.me/${COMPANY_INFO.whatsappNumber}?text=${encodeURIComponent(`Bonjour PSTC SARL, je souhaite demander un devis pour la prestation environnementale suivante : *${item.title}*.\nMerci de me recontacter.`)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="btn-card-quote"
-                          >
-                            <MessageCircle size={14} />
-                            <span>Devis via WhatsApp</span>
-                            <ArrowRight size={14} />
-                          </a>
                         )}
+                        <a
+                          href={`https://wa.me/${COMPANY_INFO.whatsappNumber}?text=${encodeURIComponent(`Bonjour PSTC SARL, je souhaite demander un devis pour la prestation environnementale suivante : *${item.title}*.\nMerci de me recontacter.`)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn-card-quote"
+                        >
+                          <MessageCircle size={14} />
+                          <span>Devis via WhatsApp</span>
+                          <ArrowRight size={14} />
+                        </a>
                       </div>
                     </div>
                   </article>

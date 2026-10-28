@@ -83,17 +83,17 @@ const POLES: PoleItem[] = [
     number: '04',
     title: 'Gestion Environnementale',
     shortTitle: 'Environnement & Salubrité',
-    tagline: 'Salubrité publique, entretien des espaces verts, conteneurs certifiés EN 840 et EPI',
+    tagline: 'Salubrité publique, entretien des espaces verts, conteneurs certifiés EN 840 et solutions de tri',
     image: '/images/hero-urban.jpg',
     accentColor: '#059669',
     overview:
-      'Prestations intégrées de salubrité urbaine et tertiaire, entretien paysager, conteneurs 2 et 4 roues normalisés EN 840, tri sélectif et équipements de protection individuelle.',
+      'Prestations intégrées de salubrité urbaine et tertiaire, entretien paysager, conteneurs 2 et 4 roues normalisés EN 840 et tri sélectif.',
     domains: [
       'Salubrité & Hygiène des Sites',
       'Aménagement & Espaces Verts',
       'Bacs Roulants Norme EN 840',
       'Tri Sélectif RSE',
-      'Équipements de Protection (EPI)',
+      'Collecte & Traitement des Déchets',
     ],
   },
 ];
