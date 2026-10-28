@@ -8,6 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
   MessageCircle,
+  ShoppingCart,
 } from 'lucide-react';
 import { COMPANY_INFO } from '../data/company';
 
@@ -83,17 +84,17 @@ const POLES: PoleItem[] = [
     number: '04',
     title: 'Gestion Environnementale',
     shortTitle: 'Environnement & Salubrité',
-    tagline: 'Salubrité publique, entretien des espaces verts, conteneurs certifiés EN 840 et solutions de tri',
+    tagline: 'Salubrité, entretien de bâtiments, poubelles & conteneurs certifiés EN 840 et solutions de tri',
     image: '/images/hero-urban.jpg',
     accentColor: '#059669',
     overview:
-      'Prestations intégrées de salubrité urbaine et tertiaire, entretien paysager, conteneurs 2 et 4 roues normalisés EN 840 et tri sélectif.',
+      'Prestations de salubrité, entretien et nettoyage de bâtiments, conteneurs 2 et 4 roues normalisés EN 840 et solutions de tri sélectif.',
     domains: [
-      'Salubrité & Hygiène des Sites',
-      'Aménagement & Espaces Verts',
-      'Bacs Roulants Norme EN 840',
-      'Tri Sélectif RSE',
-      'Collecte & Traitement des Déchets',
+      'Hygiène & Produits d’Entretien',
+      'Entretien & Nettoyage de Bâtiments',
+      'Poubelles, Bacs & Conteneurs EN 840',
+      'Tri Sélectif RSE & DASRI',
+      'Collecte & Salubrité',
     ],
   },
 ];
@@ -212,6 +213,17 @@ export default function PSTCPolesSection({ onOpenQuoteDrawer }: PSTCPolesSection
                     <span>Consulter la page dédiée</span>
                     <ArrowRight size={16} />
                   </Link>
+
+                  {pole.id === 'gestion-environnementale' && (
+                    <Link
+                      href="/catalogue?category=poubelles"
+                      className="btn-poles-slide-primary"
+                      style={{ backgroundColor: '#004B93' }}
+                    >
+                      <ShoppingCart size={16} />
+                      <span>Catalogue Poubelles</span>
+                    </Link>
+                  )}
 
                   <a
                     href={`https://wa.me/${COMPANY_INFO.whatsappNumber}?text=${encodeURIComponent(

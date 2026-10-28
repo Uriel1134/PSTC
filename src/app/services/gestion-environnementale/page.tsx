@@ -65,13 +65,13 @@ export default function GestionEnvironnementalePage() {
       ],
     },
     {
-      id: 'bacs-conteneurs',
-      title: 'Bacs Roulants & Conteneurs de Voirie',
+      id: 'poubelles-bacs',
+      title: 'Poubelles & Bacs Roulants de Collecte',
       subtitle: 'Conformité stricte à la norme européenne EN 840',
       image: '/images/products/conteneur-4-roues-vert.png',
       icon: Trash2,
       points: [
-        'Bacs roulants 2 roues robustes : 30L, 50L, 120L, 240L et 360L',
+        'Bacs roulants 2 roues robustes : 30L, 50L, 80L, 100L, 120L, 240L et 360L',
         'Grands conteneurs 4 roues de voirie : 660L, 770L et 1100L avec frein centralisé',
         'Fabrication 100% Polyéthylène Haute Densité (PEHD) vierge traité anti-UV',
         'Prises DIN renforcées compatibles avec lève-conteneurs de camions-bennes',
@@ -127,9 +127,9 @@ export default function GestionEnvironnementalePage() {
                   <MessageCircle size={17} />
                   <span>Demander un Devis Salubrité (WhatsApp)</span>
                 </a>
-                <Link href="/catalogue?gamme=ecobin" className="btn-corp-secondary">
+                <Link href="/catalogue?category=poubelles" className="btn-corp-secondary">
                   <ShoppingCart size={16} />
-                  <span>Acheter des Bacs (Catalogue)</span>
+                  <span>Catalogue Poubelles &amp; Bacs</span>
                 </Link>
                 <a href={`tel:${COMPANY_INFO.phoneCommercial}`} className="btn-corp-outline-call">
                   <Phone size={16} />
@@ -145,7 +145,7 @@ export default function GestionEnvironnementalePage() {
           <div className="container">
             <div className="service-details-header">
               <h2 className="section-title">
-                Quatre Domaines d’Hygiène, Salubrité &amp; Entretien des Espaces
+                Quatre Domaines d’Hygiène, Salubrité &amp; Gestion des Déchets
               </h2>
               <p className="section-subtitle">
                 Des équipements conformes aux normes internationales les plus exigeantes pour préserver vos environnements et valoriser vos engagements RSE.
@@ -191,7 +191,7 @@ export default function GestionEnvironnementalePage() {
                       <div className="domain-card-footer" style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                         {item.id === 'hygiene-entretien' && (
                           <Link
-                            href="/catalogue?gamme=ecobin&category=hygiene"
+                            href="/catalogue?category=hygiene"
                             className="btn-card-quote"
                             style={{ backgroundColor: '#2B8A3E', color: '#ffffff' }}
                           >
@@ -200,14 +200,14 @@ export default function GestionEnvironnementalePage() {
                             <ArrowRight size={14} />
                           </Link>
                         )}
-                        {(item.title.toLowerCase().includes('bac') || item.title.toLowerCase().includes('tri')) && (
+                        {(item.id === 'poubelles-bacs' || item.id === 'tri-selectif') && (
                           <Link
-                            href="/catalogue?gamme=ecobin"
+                            href="/catalogue?category=poubelles"
                             className="btn-card-quote"
                             style={{ backgroundColor: '#004B93', color: '#ffffff' }}
                           >
                             <ShoppingCart size={14} />
-                            <span>Voir les bacs au catalogue</span>
+                            <span>Voir tout le catalogue Poubelles &amp; Conteneurs</span>
                             <ArrowRight size={14} />
                           </Link>
                         )}
@@ -235,6 +235,15 @@ export default function GestionEnvironnementalePage() {
                 <p>Nos conseillers effectuent une étude de vos volumes et vous soumettent un devis proforma avec délais de livraison garantis.</p>
               </div>
               <div className="service-cta-btns">
+                <Link
+                  href="/catalogue?category=poubelles"
+                  className="btn-about-quote"
+                  style={{ backgroundColor: '#004B93', color: '#ffffff' }}
+                >
+                  <ShoppingCart size={16} />
+                  <span>Catalogue Poubelles &amp; Conteneurs</span>
+                  <ArrowRight size={16} />
+                </Link>
                 <a
                   href={`https://wa.me/${COMPANY_INFO.whatsappNumber}?text=${encodeURIComponent("Bonjour PSTC SARL, je souhaite demander un devis proforma pour des conteneurs normalisés ou un plan de gestion des déchets.")}`}
                   target="_blank"

@@ -33,6 +33,13 @@ type GammeScope = 'all' | 'ecobin' | 'epi';
 const isEpiCategory = (cat: string) =>
   cat === 'epi-protection' || cat === 'epi-vetements' || cat === 'signalisation-urgence' || cat === 'epi';
 
+const isPoubelleCategory = (cat: string) =>
+  cat === 'bacs-2-roues' ||
+  cat === 'conteneurs-4-roues' ||
+  cat === 'tri-selectif' ||
+  cat === 'interieur-bureau' ||
+  cat === 'medical-dasri';
+
 export default function CataloguePage() {
   const {
     quoteItems,
@@ -65,6 +72,9 @@ export default function CataloguePage() {
       if (gammeParam === 'epi' || cat === 'epi' || (cat && isEpiCategory(cat))) {
         setGammeScope('epi');
         setSelectedCategory(cat && cat !== 'epi' ? cat : 'all');
+      } else if (gammeParam === 'poubelles' || cat === 'poubelles') {
+        setGammeScope('ecobin');
+        setSelectedCategory('poubelles');
       } else if (gammeParam === 'ecobin') {
         setGammeScope('ecobin');
         setSelectedCategory(cat || 'all');
@@ -175,7 +185,8 @@ export default function CataloguePage() {
         selectedCategory === 'all' ||
         product.category === selectedCategory ||
         (selectedCategory === 'epi' && isEpi) ||
-        (selectedCategory === 'hygiene' && isHygieneProduct);
+        (selectedCategory === 'hygiene' && isHygieneProduct) ||
+        (selectedCategory === 'poubelles' && isPoubelleCategory(product.category));
 
       if (!matchCategory) return false;
 
@@ -262,6 +273,7 @@ export default function CataloguePage() {
       return 'Toutes les références professionnelles';
     }
     if (selectedCategory === 'hygiene') return 'Hygiène, Produits d’Entretien & Nettoyage';
+    if (selectedCategory === 'poubelles') return 'Catalogue Poubelles, Bacs Roulants & Conteneurs (ECOBIN)';
     const found = displayedCategories.find((c) => c.id === selectedCategory);
     return found ? found.label : selectedCategory;
   }, [selectedCategory, gammeScope, displayedCategories]);
@@ -275,6 +287,14 @@ export default function CataloguePage() {
         id: 'hygiene',
         label: 'Hygiène & Produits d’Entretien',
         count: hygieneCount,
+      };
+    }
+    if (selectedCategory === 'poubelles') {
+      const poubellesCount = PRODUCTS.filter((p) => isPoubelleCategory(p.category)).length;
+      return {
+        id: 'poubelles',
+        label: 'Toutes les Poubelles, Bacs & Conteneurs',
+        count: poubellesCount,
       };
     }
     return displayedCategories.find((c) => c.id === selectedCategory);
