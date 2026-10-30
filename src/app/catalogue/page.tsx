@@ -27,7 +27,6 @@ import QuoteDrawer from '../../components/QuoteDrawer';
 import { PRODUCTS, CATEGORIES, Product } from '../../data/products';
 import { COMPANY_INFO } from '../../data/company';
 import { useQuote } from '../../context/QuoteContext';
-import { supabase } from '../../lib/supabase';
 
 type GammeScope = 'all' | 'ecobin' | 'epi';
 
@@ -61,45 +60,6 @@ export default function CataloguePage() {
   const [sortBy, setSortBy] = useState<string>('default');
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState<boolean>(false);
   const [productList, setProductList] = useState<Product[]>(PRODUCTS);
-
-  // Charger les produits dynamiques depuis Supabase (avec fallback statique instantané)
-  useEffect(() => {
-    async function loadLiveProducts() {
-      try {
-        const { data, error } = await supabase.from('products').select('*');
-        if (!error && data && data.length > 0) {
-          const mapped: Product[] = data.map((p: any) => ({
-            id: p.id,
-            reference: p.reference,
-            supplierRef: p.supplier_ref || undefined,
-            name: p.name,
-            category: p.category === 'medical-dasri' ? 'interieur-bureau' : p.category,
-            categoryLabel:
-              p.category_label === 'Bacs Médicaux & DASRI'
-                ? 'Poubelles Intérieur & Sanitaire'
-                : (p.category_label || p.category),
-            capacity: p.capacity || undefined,
-            availableSizes: p.available_sizes || undefined,
-            dimensions: p.dimensions || '-',
-            material: p.material || 'Standard',
-            weight: p.weight || undefined,
-            moq: p.moq || undefined,
-            indicativePrice: p.indicative_price || undefined,
-            colors: Array.isArray(p.colors) ? p.colors : [],
-            description: p.description || '',
-            applications: Array.isArray(p.applications) ? p.applications : [],
-            features: Array.isArray(p.features) ? p.features : [],
-            standard: p.standard || undefined,
-            image: p.image || '/images/products/conteneur-4-roues-vert.png',
-          }));
-          setProductList(mapped);
-        }
-      } catch (err) {
-        console.warn('Fallback catalogue local statique actif:', err);
-      }
-    }
-    loadLiveProducts();
-  }, []);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
