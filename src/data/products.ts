@@ -35,10 +35,10 @@ export const CATEGORIES = [
   { id: 'bacs-2-roues', label: 'Bacs Roulants 2 Roues', count: 3 },
   { id: 'conteneurs-4-roues', label: 'Conteneurs Lourds & Bennes', count: 7 },
   { id: 'tri-selectif', label: 'Tri Sélectif & Écologie', count: 4 },
-  { id: 'interieur-bureau', label: 'Poubelles Intérieur & Cendriers', count: 4 },
+  { id: 'interieur-bureau', label: 'Poubelles Intérieur & Cendriers', count: 5 },
   { id: 'materiel-nettoyage', label: 'Chariots & Matériel de Nettoyage', count: 12 },
   { id: 'hygiene-sanitaire', label: 'Hygiène & Distributeurs Sanitaires', count: 2 },
-  { id: 'medical-dasri', label: 'Bacs Médicaux & DASRI', count: 1 },
+  // { id: 'medical-dasri', label: 'Bacs Médicaux & DASRI', count: 1 }, /* Thème masqué sur le site */
   { id: 'epi-vetements', label: 'Vêtements Haute Visibilité', count: 19 },
   { id: 'epi-protection', label: 'Protection Individuelle (EPI)', count: 8 },
   { id: 'signalisation-urgence', label: 'Signalisation & Urgence', count: 4 },
@@ -208,23 +208,22 @@ export const PRODUCTS: Product[] = [
   },
 
   // =========================================================================
-  // =========================================================================
-  // 4. BACS MÉDICAUX & DASRI (Lihao Plastic)
+  // 4. POUBELLES À PÉDALE & SANITAIRE (Lihao Plastic)
   // =========================================================================
   {
     id: 'lh-jt-15l',
     reference: 'LH-JT-15L à 60L',
     supplierRef: 'LH-JT (15L, 20L, 30L, 40L, 50L, 60L)',
-    name: 'Poubelle Médicale à Pédale',
-    category: 'medical-dasri',
-    categoryLabel: 'Bacs Médicaux & DASRI',
+    name: 'Poubelle à Pédale',
+    category: 'interieur-bureau',
+    categoryLabel: 'Poubelles Intérieur & Sanitaire',
     capacity: '15 L à 60 L (15L, 20L, 30L, 40L, 50L & 60L)',
     availableSizes: '15 L • 20 L • 30 L • 40 L • 50 L • 60 L',
     dimensions: '15L: 270×250×340mm | 20L: 300×240×400mm | 30L: 365×330×500mm | 40L: 390×360×460mm | 50L: 420×400×580mm | 60L: 450×400×570mm',
     material: 'PEHD (HDPE) vierge antibactérien traité anti-chimique et décontaminants',
     weight: '0,8 kg à 2,6 kg selon contenance',
     colors: ['Jaune Médical DASRI (Biohazard)', 'Rouge Risque Biologique', 'Bleu', 'Vert', 'Gris Anthracite'],
-    description: 'Poubelle médicale étanche à ouverture par pédale robuste sans contact manuel, assurant une parfaite asepsie. Conçue pour le tri hygiénique des déchets de soins à risques infectieux (DASRI, compresses, gants, pansements) et la collecte sanitaire hospitalière.',
+    description: 'Poubelle étanche à ouverture par pédale robuste sans contact manuel, assurant une parfaite asepsie. Conçue pour le tri hygiénique des déchets de soins à risques infectieux (DASRI, compresses, gants, pansements) et la collecte sanitaire hospitalière ou tertiaire.',
     applications: ['Blocs opératoires & Urgences', 'Cabinets dentaires & Médicaux', 'Laboratoires d’analyses médicales', 'Salles de soins infirmiers & Maternités', 'Centres de vaccination & Pharmacies'],
     features: ['Pédale ergonomique renforcée testée à plus de 50 000 ouvertures', 'Pictogramme Biohazard international réglementaire sur modèle DASRI', 'Couvercle hermétique anti-odeurs et anti-aérosols', 'Disponible en 6 capacités : 15L, 20L, 30L, 40L, 50L et 60L', '5 coloris disponibles pour tri sélectif et filière DASRI'],
     standard: 'Conforme protocoles DASRI / Norme hospitalière NF X30-500 / Homologation OMS',
@@ -315,7 +314,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'lh-xt-tst-20lft',
     reference: 'LH-XT-TST-20LFT',
-    name: 'Collecteur Sanitaire Féminin 20 Litres',
+    name: 'Collecteur Sanitaire 20 Litres',
     category: 'interieur-bureau',
     categoryLabel: 'Poubelles Intérieur & Sanitaire',
     capacity: '20 Litres',
@@ -323,7 +322,7 @@ export const PRODUCTS: Product[] = [
     material: 'PEHD (HDPE) traité antibactérien',
     weight: '0,98 kg',
     colors: ['Blanc Sanitaire', 'Gris Clair'],
-    description: 'Borne sanitaire hygiénique spéciale cabines de toilettes féminines avec trappe anti-regard.',
+    description: 'Borne sanitaire hygiénique spéciale cabines de toilettes avec trappe anti-regard.',
     applications: ['Hôtels étoilés', 'Sièges d’institutions', 'Aéroports', 'Centres commerciaux'],
     features: ['Trappe d’insertion occultante', 'Traitement neutralisateur d’odeurs', 'Format slim pour cabine étroite'],
     standard: 'Conforme normes d’hygiène sanitaires internationales',

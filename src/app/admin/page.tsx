@@ -1,0 +1,1449 @@
+'use client';
+
+import React, { useState, useEffect, useMemo } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import {
+  Plus,
+  Search,
+  Edit,
+  Trash2,
+  ExternalLink,
+  LogOut,
+  Upload,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  X,
+  Package,
+} from 'lucide-react';
+import { supabase } from '../../lib/supabase';
+
+interface SupabaseProduct {
+  id: string;
+  reference: string;
+  supplier_ref?: string | null;
+  name: string;
+  category: string;
+  category_label: string;
+  capacity?: string | null;
+  available_sizes?: string | null;
+  dimensions: string;
+  material: string;
+  weight?: string | null;
+  moq?: string | null;
+  indicative_price?: string | null;
+  colors: string[];
+  description: string;
+  applications: string[];
+  features: string[];
+  standard?: string | null;
+  image: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+const CATEGORIES_LIST = [
+  { id: 'bacs-2-roues', label: 'Bacs Roulants 2 Roues' },
+  { id: 'conteneurs-4-roues', label: 'Conteneurs Lourds 4 Roues' },
+  { id: 'tri-selectif', label: 'Tri Sélectif & Écologie' },
+  { id: 'interieur-bureau', label: 'Poubelles Intérieur & Cendriers' },
+  // { id: 'medical-dasri', label: 'Bacs Médicaux & DASRI' }, /* Masqué sur demande */
+  { id: 'materiel-nettoyage', label: 'Chariots & Matériel de Nettoyage' },
+  { id: 'hygiene-sanitaire', label: 'Hygiène & Distributeurs Sanitaires' },
+  { id: 'epi-vetements', label: 'Vêtements Haute Visibilité' },
+  { id: 'epi-protection', label: 'Protection Individuelle (EPI)' },
+  { id: 'signalisation-urgence', label: 'Signalisation & Urgence' },
+];
+
+export default function AdminDashboardPage() {
+  const router = useRouter();
+
+  const [products, setProducts] = useState<SupabaseProduct[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthChecking, setIsAuthChecking] = useState(true);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+
+  // Modal d'ajout / modification
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
+  const [activeProduct, setActiveProduct] = useState<Partial<SupabaseProduct>>({});
+  const [isSaving, setIsSaving] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  // Gestion dynamique de la saisie de nouvelle catégorie
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
+  const [customCategoryInput, setCustomCategoryInput] = useState('');
+
+  // Upload d'image
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  // Modal de confirmation de suppression
+  const [productToDelete, setProductToDelete] = useState<SupabaseProduct | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Notification toast
+  const [toastMessage, setToastMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const showToast = (text: string, type: 'success' | 'error' = 'success') => {
+    setToastMessage({ text, type });
+    setTimeout(() => setToastMessage(null), 4000);
+  };
+
+  // Charger les produits depuis Supabase
+  const fetchProducts = async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Erreur chargement Supabase:', error);
+        showToast(`Erreur chargement : ${error.message}`, 'error');
+      } else if (data) {
+        setProducts(data as SupabaseProduct[]);
+      }
+    } catch (err) {
+      console.error('Erreur réseau:', err);
+      showToast('Impossible de contacter Supabase.', 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Vérifier la session Supabase
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        router.push('/admin/login');
+      } else {
+        setUserEmail(session.user.email || 'admin@pstc.bj');
+        setIsAuthChecking(false);
+        fetchProducts();
+      }
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        router.push('/admin/login');
+      } else {
+        setUserEmail(session.user.email || 'admin@pstc.bj');
+        setIsAuthChecking(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [router]);
+
+  // Déconnexion
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/admin/login');
+  };
+
+  // Liste unifiée des catégories (base fixe + catégories personnalisées créées dans Supabase)
+  const dynamicCategories = useMemo(() => {
+    const catMap = new Map<string, string>();
+    CATEGORIES_LIST.forEach((c) => catMap.set(c.id, c.label));
+    products.forEach((p) => {
+      if (p.category) {
+        catMap.set(p.category, p.category_label || p.category);
+      }
+    });
+    return Array.from(catMap.entries()).map(([id, label]) => ({ id, label }));
+  }, [products]);
+
+  // Filtrage des produits
+  const filteredProducts = useMemo(() => {
+    return products.filter((p) => {
+      const matchCat = selectedCategory === 'all' || p.category === selectedCategory;
+      const q = searchQuery.toLowerCase().trim();
+      const matchSearch =
+        !q ||
+        p.name.toLowerCase().includes(q) ||
+        p.reference.toLowerCase().includes(q) ||
+        (p.category_label && p.category_label.toLowerCase().includes(q));
+
+      return matchCat && matchSearch;
+    });
+  }, [products, selectedCategory, searchQuery]);
+
+  // Ouvrir modal d'ajout
+  const handleOpenCreate = () => {
+    setModalMode('create');
+    setIsCustomCategory(false);
+    setCustomCategoryInput('');
+    setActiveProduct({
+      name: '',
+      reference: '',
+      category: 'bacs-2-roues',
+      category_label: 'Bacs Roulants 2 Roues',
+      capacity: '',
+      dimensions: '',
+      material: 'PEHD 100% Vierge traité anti-UV',
+      standard: null,
+      indicative_price: '',
+      moq: 'MOQ : 1 unité',
+      description: '',
+      colors: ['Vert'],
+      applications: [],
+      features: [],
+      image: '/images/products/conteneur-4-roues-vert.png',
+    });
+    setFormError(null);
+    setIsModalOpen(true);
+  };
+
+  // Ouvrir modal d'édition
+  const handleOpenEdit = (p: SupabaseProduct) => {
+    setModalMode('edit');
+    setIsCustomCategory(false);
+    setCustomCategoryInput('');
+    setActiveProduct({ ...p });
+    setFormError(null);
+    setIsModalOpen(true);
+  };
+
+  // Téléversement d'image vers Supabase Storage
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadError(null);
+    setIsUploadingImage(true);
+
+    try {
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'png';
+      const cleanExt = ['jpg', 'jpeg', 'png', 'webp'].includes(ext) ? ext : 'png';
+      const fileName = `pdt-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${cleanExt}`;
+
+      const { error: uploadErr } = await supabase.storage
+        .from('product-images')
+        .upload(fileName, file, {
+          contentType: file.type,
+          upsert: false,
+        });
+
+      if (uploadErr) {
+        setUploadError(uploadErr.message);
+        setIsUploadingImage(false);
+        return;
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from('product-images')
+        .getPublicUrl(fileName);
+
+      setActiveProduct((prev) => ({
+        ...prev,
+        image: publicUrlData.publicUrl,
+      }));
+
+      showToast('Image téléversée avec succès sur Supabase Storage !');
+    } catch {
+      setUploadError('Erreur lors du téléversement.');
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
+  // Sauvegarder produit (Créer ou Modifier)
+  const handleSaveProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError(null);
+    setIsSaving(true);
+
+    try {
+      let finalCategory = String(activeProduct.category || '').trim();
+      let finalCategoryLabel = String(activeProduct.category_label || '').trim();
+
+      if (isCustomCategory && customCategoryInput.trim()) {
+        finalCategoryLabel = customCategoryInput.trim();
+        finalCategory = finalCategoryLabel
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '');
+      } else {
+        const catObj = dynamicCategories.find((c) => c.id === finalCategory);
+        if (catObj) {
+          finalCategoryLabel = catObj.label;
+        }
+      }
+
+      if (!activeProduct.name || !activeProduct.reference || !finalCategory) {
+        setFormError('Le nom, la référence et la catégorie sont obligatoires.');
+        setIsSaving(false);
+        return;
+      }
+
+      const productData = {
+        reference: String(activeProduct.reference).trim(),
+        supplier_ref: activeProduct.supplier_ref ? String(activeProduct.supplier_ref).trim() : null,
+        name: String(activeProduct.name).trim(),
+        category: finalCategory,
+        category_label: finalCategoryLabel || finalCategory,
+        capacity: activeProduct.capacity ? String(activeProduct.capacity).trim() : null,
+        available_sizes: activeProduct.available_sizes ? String(activeProduct.available_sizes).trim() : null,
+        dimensions: String(activeProduct.dimensions || '-').trim(),
+        material: String(activeProduct.material || 'Standard').trim(),
+        weight: activeProduct.weight ? String(activeProduct.weight).trim() : null,
+        moq: activeProduct.moq ? String(activeProduct.moq).trim() : null,
+        indicative_price: activeProduct.indicative_price ? String(activeProduct.indicative_price).trim() : null,
+        colors: Array.isArray(activeProduct.colors) ? activeProduct.colors : [],
+        description: String(activeProduct.description || '').trim(),
+        applications: Array.isArray(activeProduct.applications) ? activeProduct.applications : [],
+        features: Array.isArray(activeProduct.features) ? activeProduct.features : [],
+        standard: activeProduct.standard ? String(activeProduct.standard).trim() : null,
+        image: String(activeProduct.image || '/images/products/conteneur-4-roues-vert.png').trim(),
+        updated_at: new Date().toISOString(),
+      };
+
+      if (modalMode === 'create') {
+        const id = activeProduct.reference.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const { error } = await supabase.from('products').insert([{ id, ...productData }]);
+        if (error) {
+          setFormError(error.message);
+          setIsSaving(false);
+          return;
+        }
+        showToast('Nouveau produit ajouté sur Supabase !');
+      } else {
+        if (!activeProduct.id) {
+          setFormError('Identifiant introuvable.');
+          setIsSaving(false);
+          return;
+        }
+        const { error } = await supabase.from('products').update(productData).eq('id', activeProduct.id);
+        if (error) {
+          setFormError(error.message);
+          setIsSaving(false);
+          return;
+        }
+        showToast('Produit mis à jour avec succès !');
+      }
+
+      setIsModalOpen(false);
+      fetchProducts();
+    } catch {
+      setFormError('Erreur de communication avec Supabase.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Confirmer suppression
+  const handleConfirmDelete = async () => {
+    if (!productToDelete) return;
+    setIsDeleting(true);
+
+    try {
+      const { error } = await supabase.from('products').delete().eq('id', productToDelete.id);
+      if (error) {
+        showToast(`Erreur : ${error.message}`, 'error');
+      } else {
+        showToast(`Produit "${productToDelete.name}" supprimé.`);
+        setProductToDelete(null);
+        fetchProducts();
+      }
+    } catch {
+      showToast('Erreur lors de la suppression.', 'error');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Statistiques rapides
+  const stats = useMemo(() => {
+    const total = products.length;
+    const bacs = products.filter((p) => p.category === 'bacs-2-roues' || p.category === 'conteneurs-4-roues').length;
+    const tri = products.filter((p) => p.category === 'tri-selectif' || p.category === 'medical-dasri').length;
+    const hygiene = products.filter((p) => p.category === 'materiel-nettoyage' || p.category === 'hygiene-sanitaire').length;
+    const epi = products.filter((p) => p.category === 'epi-vetements' || p.category === 'epi-protection' || p.category === 'signalisation-urgence').length;
+    return { total, bacs, tri, hygiene, epi };
+  }, [products]);
+
+  if (isAuthChecking) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0a192f', color: '#ffffff' }}>
+        <Loader2 size={32} style={{ animation: 'spin 1s linear infinite' }} />
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc', color: '#1e293b', fontFamily: 'inherit' }}>
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          zIndex: 9999,
+          backgroundColor: toastMessage.type === 'success' ? '#059669' : '#dc2626',
+          color: '#ffffff',
+          padding: '12px 20px',
+          borderRadius: '8px',
+          boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          fontSize: '14px',
+          fontWeight: 600,
+        }}>
+          {toastMessage.type === 'success' ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
+          <span>{toastMessage.text}</span>
+        </div>
+      )}
+
+      {/* Barre Supérieure */}
+      <header style={{
+        backgroundColor: '#002B49',
+        borderBottom: '1px solid #1e3a5f',
+        padding: '14px 24px',
+        color: '#ffffff',
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+      }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '15px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <div style={{ backgroundColor: '#ffffff', padding: '6px 14px', borderRadius: '8px', display: 'flex', alignItems: 'center' }}>
+              <div style={{ position: 'relative', width: '130px', height: '34px' }}>
+                <Image
+                  src="/images/logo-pstc-sarl.png"
+                  alt="PSTC SARL Logo"
+                  fill
+                  style={{ objectFit: 'contain' }}
+                  priority
+                />
+              </div>
+            </div>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff' }}>Espace Administrateur</span>
+                <span style={{ fontSize: '11px', backgroundColor: '#059669', color: '#ffffff', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>
+                  Supabase Live
+                </span>
+              </div>
+              <span style={{ fontSize: '12px', color: '#94a3b8' }}>Connecté en tant que : {userEmail}</span>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Link
+              href="/catalogue"
+              target="_blank"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: '#ffffff',
+                padding: '8px 14px',
+                borderRadius: '6px',
+                fontSize: '13px',
+                fontWeight: 500,
+                textDecoration: 'none',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+              }}
+            >
+              <span>Voir le Catalogue Public</span>
+              <ExternalLink size={14} />
+            </Link>
+
+            <button
+              onClick={handleLogout}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                color: '#fca5a5',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                padding: '8px 14px',
+                borderRadius: '6px',
+                fontSize: '13px',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              <LogOut size={14} />
+              <span>Déconnexion</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Contenu Principal */}
+      <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '28px 24px' }}>
+        {/* Cartes KPI */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+          gap: '16px',
+          marginBottom: '28px',
+        }}>
+          <div style={{ backgroundColor: '#ffffff', padding: '18px 20px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+            <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500 }}>Total Produits Actifs</span>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '4px' }}>
+              <span style={{ fontSize: '28px', fontWeight: 800, color: '#002B49' }}>{stats.total}</span>
+              <span style={{ fontSize: '12px', color: '#059669', fontWeight: 600 }}>en ligne sur Supabase</span>
+            </div>
+          </div>
+
+          <div style={{ backgroundColor: '#ffffff', padding: '18px 20px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+            <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500 }}>Bacs &amp; Conteneurs Voirie</span>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '4px' }}>
+              <span style={{ fontSize: '28px', fontWeight: 800, color: '#004B93' }}>{stats.bacs}</span>
+              <span style={{ fontSize: '12px', color: '#64748b' }}>références</span>
+            </div>
+          </div>
+
+          <div style={{ backgroundColor: '#ffffff', padding: '18px 20px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+            <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500 }}>Tri Sélectif &amp; DASRI</span>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '4px' }}>
+              <span style={{ fontSize: '28px', fontWeight: 800, color: '#059669' }}>{stats.tri}</span>
+              <span style={{ fontSize: '12px', color: '#64748b' }}>stations &amp; bornes</span>
+            </div>
+          </div>
+
+          <div style={{ backgroundColor: '#ffffff', padding: '18px 20px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+            <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500 }}>Hygiène &amp; Nettoyage</span>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '4px' }}>
+              <span style={{ fontSize: '28px', fontWeight: 800, color: '#d97706' }}>{stats.hygiene}</span>
+              <span style={{ fontSize: '12px', color: '#64748b' }}>chariots &amp; savons</span>
+            </div>
+          </div>
+
+          <div style={{ backgroundColor: '#ffffff', padding: '18px 20px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+            <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500 }}>EPI &amp; Sécurité Chantier</span>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '4px' }}>
+              <span style={{ fontSize: '28px', fontWeight: 800, color: '#475569' }}>{stats.epi}</span>
+              <span style={{ fontSize: '12px', color: '#64748b' }}>équipements</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Barre d'Actions & Filtres */}
+        <div style={{
+          backgroundColor: '#ffffff',
+          padding: '18px 20px',
+          borderRadius: '12px',
+          border: '1px solid #e2e8f0',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '16px',
+          marginBottom: '20px',
+        }}>
+          {/* Recherche & Filtre */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: '300px' }}>
+            <div style={{ position: 'relative', flex: 1 }}>
+              <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+              <input
+                type="text"
+                placeholder="Rechercher par référence, nom, litrage..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px 10px 36px',
+                  borderRadius: '8px',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '14px',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
+
+            <div style={{ minWidth: '220px' }}>
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  borderRadius: '8px',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '14px',
+                  outline: 'none',
+                  backgroundColor: '#ffffff',
+                  boxSizing: 'border-box',
+                }}
+              >
+                <option value="all">Toutes les catégories ({products.length})</option>
+                {dynamicCategories.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.label} ({products.filter((p) => p.category === c.id).length})
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Bouton Créer */}
+          <button
+            onClick={handleOpenCreate}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              backgroundColor: '#059669',
+              color: '#ffffff',
+              padding: '10px 20px',
+              borderRadius: '8px',
+              fontSize: '14px',
+              fontWeight: 600,
+              border: 'none',
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(5, 150, 105, 0.3)',
+            }}
+          >
+            <Plus size={18} />
+            <span>Nouveau Produit</span>
+          </button>
+        </div>
+
+        {/* Liste des Produits */}
+        <div style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '12px',
+          border: '1px solid #e2e8f0',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+          overflow: 'hidden',
+        }}>
+          {isLoading ? (
+            <div style={{ padding: '60px', textAlign: 'center', color: '#64748b' }}>
+              <Loader2 size={32} style={{ animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
+              <p style={{ margin: 0, fontSize: '15px', fontWeight: 500 }}>Chargement des produits depuis Supabase...</p>
+            </div>
+          ) : filteredProducts.length === 0 ? (
+            <div style={{ padding: '60px', textAlign: 'center', color: '#64748b' }}>
+              <Package size={40} style={{ margin: '0 auto 12px', opacity: 0.4 }} />
+              <p style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#334155' }}>Aucun produit trouvé</p>
+              <p style={{ margin: '4px 0 0', fontSize: '13px' }}>Modifiez votre recherche ou ajoutez un nouveau produit.</p>
+            </div>
+          ) : (
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
+                <thead>
+                  <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    <th style={{ padding: '14px 18px', width: '70px' }}>Visuel</th>
+                    <th style={{ padding: '14px 18px' }}>Réf. &amp; Désignation</th>
+                    <th style={{ padding: '14px 18px' }}>Catégorie</th>
+                    <th style={{ padding: '14px 18px' }}>Capacité / Litrage</th>
+                    <th style={{ padding: '14px 18px' }}>Prix / MOQ</th>
+                    <th style={{ padding: '14px 18px', textAlign: 'right' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredProducts.map((p) => (
+                    <tr
+                      key={p.id}
+                      style={{
+                        borderBottom: '1px solid #f1f5f9',
+                        transition: 'background-color 0.15s ease',
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f8fafc')}
+                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                    >
+                      {/* Image */}
+                      <td style={{ padding: '12px 18px' }}>
+                        <div style={{
+                          width: '54px',
+                          height: '54px',
+                          borderRadius: '8px',
+                          backgroundColor: '#f1f5f9',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          border: '1px solid #e2e8f0',
+                        }}>
+                          <Image
+                            src={p.image || '/images/products/conteneur-4-roues-vert.png'}
+                            alt={p.name}
+                            fill
+                            sizes="54px"
+                            style={{ objectFit: 'contain', padding: '4px' }}
+                          />
+                        </div>
+                      </td>
+
+                      {/* Désignation */}
+                      <td style={{ padding: '12px 18px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                          <span style={{
+                            backgroundColor: '#e2e8f0',
+                            color: '#0f172a',
+                            fontWeight: 700,
+                            fontSize: '11px',
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            fontFamily: 'monospace',
+                          }}>
+                            {p.reference}
+                          </span>
+                          {p.supplier_ref && (
+                            <span style={{ fontSize: '11px', color: '#94a3b8' }}>({p.supplier_ref})</span>
+                          )}
+                        </div>
+                        <span style={{ fontWeight: 600, color: '#1e293b', fontSize: '14px', display: 'block', lineHeight: 1.3 }}>
+                          {p.name}
+                        </span>
+                      </td>
+
+                      {/* Catégorie */}
+                      <td style={{ padding: '12px 18px' }}>
+                        <span style={{
+                          display: 'inline-block',
+                          fontSize: '12px',
+                          fontWeight: 500,
+                          padding: '3px 8px',
+                          borderRadius: '6px',
+                          backgroundColor: p.category.includes('bac') || p.category.includes('conteneur')
+                            ? 'rgba(0, 75, 147, 0.1)'
+                            : p.category.includes('tri')
+                            ? 'rgba(5, 150, 105, 0.1)'
+                            : 'rgba(100, 116, 139, 0.1)',
+                          color: p.category.includes('bac') || p.category.includes('conteneur')
+                            ? '#004B93'
+                            : p.category.includes('tri')
+                            ? '#059669'
+                            : '#475569',
+                        }}>
+                          {p.category_label || p.category}
+                        </span>
+                      </td>
+
+                      {/* Capacité / Litrage */}
+                      <td style={{ padding: '12px 18px' }}>
+                        {p.capacity ? (
+                          <div style={{ fontWeight: 600, color: '#0f172a', fontSize: '13px' }}>
+                            {p.capacity}
+                          </div>
+                        ) : p.available_sizes ? (
+                          <div style={{ fontSize: '12px', color: '#004B93', fontWeight: 600 }}>
+                            {p.available_sizes}
+                          </div>
+                        ) : (
+                          <span style={{ fontSize: '12px', color: '#94a3b8' }}>-</span>
+                        )}
+                      </td>
+
+                      {/* Prix / MOQ */}
+                      <td style={{ padding: '12px 18px' }}>
+                        <div style={{ fontWeight: 600, color: '#0f172a', fontSize: '13px' }}>
+                          {p.indicative_price || 'Sur Devis'}
+                        </div>
+                        {p.moq && (
+                          <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>
+                            {p.moq}
+                          </div>
+                        )}
+                      </td>
+
+                      {/* Actions */}
+                      <td style={{ padding: '12px 18px', textAlign: 'right' }}>
+                        <div style={{ display: 'inline-flex', gap: '8px' }}>
+                          <button
+                            onClick={() => handleOpenEdit(p)}
+                            title="Modifier ce produit"
+                            style={{
+                              padding: '6px 10px',
+                              backgroundColor: '#f1f5f9',
+                              color: '#004B93',
+                              border: '1px solid #cbd5e1',
+                              borderRadius: '6px',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              fontSize: '12px',
+                              fontWeight: 600,
+                            }}
+                          >
+                            <Edit size={14} />
+                            <span>Modifier</span>
+                          </button>
+
+                          <button
+                            onClick={() => setProductToDelete(p)}
+                            title="Supprimer ce produit"
+                            style={{
+                              padding: '6px 10px',
+                              backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                              color: '#dc2626',
+                              border: '1px solid rgba(239, 68, 68, 0.2)',
+                              borderRadius: '6px',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              fontSize: '12px',
+                              fontWeight: 600,
+                            }}
+                          >
+                            <Trash2 size={14} />
+                            <span>Supprimer</span>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </main>
+
+      {/* ========================================================================= */}
+      {/* MODAL D'AJOUT / ÉDITION DE PRODUIT */}
+      {/* ========================================================================= */}
+      {isModalOpen && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: 'rgba(0,0,0,0.6)',
+          backdropFilter: 'blur(4px)',
+          zIndex: 999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+        }}>
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '16px',
+            width: '100%',
+            maxWidth: '750px',
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+            border: '1px solid #cbd5e1',
+          }}>
+            {/* Modal Header */}
+            <div style={{
+              padding: '20px 24px',
+              borderBottom: '1px solid #e2e8f0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              backgroundColor: '#002B49',
+              color: '#ffffff',
+              borderTopLeftRadius: '16px',
+              borderTopRightRadius: '16px',
+            }}>
+              <div>
+                <h2 style={{ fontSize: '18px', fontWeight: 700, margin: 0 }}>
+                  {modalMode === 'create' ? 'Ajouter un Nouveau Produit' : `Modifier : ${activeProduct.name || activeProduct.reference}`}
+                </h2>
+                <span style={{ fontSize: '12px', color: '#94a3b8' }}>
+                  Les modifications sont enregistrées en direct dans Supabase
+                </span>
+              </div>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer', padding: '4px' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <form onSubmit={handleSaveProduct} style={{ padding: '24px' }}>
+              {formError && (
+                <div style={{
+                  backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  color: '#dc2626',
+                  padding: '12px 14px',
+                  borderRadius: '8px',
+                  fontSize: '13px',
+                  marginBottom: '18px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}>
+                  <AlertCircle size={16} />
+                  <span>{formError}</span>
+                </div>
+              )}
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+                {/* Référence */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>
+                    Référence PSTC *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={activeProduct.reference || ''}
+                    onChange={(e) => setActiveProduct({ ...activeProduct, reference: e.target.value })}
+                    placeholder="Ex: PSTC-POU-120"
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid #cbd5e1',
+                      fontSize: '14px',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+
+                {/* Nom */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>
+                    Désignation du Produit *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={activeProduct.name || ''}
+                    onChange={(e) => setActiveProduct({ ...activeProduct, name: e.target.value })}
+                    placeholder="Ex: Bac roulant poubelle 120 L"
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid #cbd5e1',
+                      fontSize: '14px',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+
+                {/* Catégorie */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: '#334155' }}>
+                      Catégorie Métier *
+                    </label>
+                    {!isCustomCategory ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsCustomCategory(true);
+                          setCustomCategoryInput('');
+                        }}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: '#004B93',
+                          fontSize: '12px',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          padding: 0,
+                        }}
+                      >
+                        <Plus size={13} />
+                        <span>+ Écrire une nouvelle catégorie</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsCustomCategory(false);
+                          const first = dynamicCategories[0] || { id: 'bacs-2-roues', label: 'Bacs Roulants 2 Roues' };
+                          setActiveProduct({
+                            ...activeProduct,
+                            category: first.id,
+                            category_label: first.label,
+                          });
+                        }}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: '#64748b',
+                          fontSize: '12px',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          padding: 0,
+                        }}
+                      >
+                        ← Choisir dans la liste existante
+                      </button>
+                    )}
+                  </div>
+
+                  {!isCustomCategory ? (
+                    <select
+                      value={activeProduct.category || dynamicCategories[0]?.id || 'bacs-2-roues'}
+                      onChange={(e) => {
+                        if (e.target.value === '__NEW__') {
+                          setIsCustomCategory(true);
+                          setCustomCategoryInput('');
+                        } else {
+                          const catObj = dynamicCategories.find((c) => c.id === e.target.value);
+                          setActiveProduct({
+                            ...activeProduct,
+                            category: e.target.value,
+                            category_label: catObj?.label || e.target.value,
+                          });
+                        }
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        borderRadius: '8px',
+                        border: '1px solid #cbd5e1',
+                        fontSize: '14px',
+                        backgroundColor: '#ffffff',
+                        boxSizing: 'border-box',
+                      }}
+                    >
+                      {dynamicCategories.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.label}
+                        </option>
+                      ))}
+                      <option value="__NEW__" style={{ fontWeight: 700, color: '#004B93' }}>
+                        ➕ + Ajouter une nouvelle catégorie personnalisée...
+                      </option>
+                    </select>
+                  ) : (
+                    <div>
+                      <input
+                        type="text"
+                        autoFocus
+                        required
+                        value={customCategoryInput}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setCustomCategoryInput(val);
+                          const slug = val
+                            .toLowerCase()
+                            .normalize('NFD')
+                            .replace(/[\u0300-\u036f]/g, '')
+                            .replace(/[^a-z0-9]+/g, '-')
+                            .replace(/(^-|-$)/g, '');
+                          setActiveProduct({
+                            ...activeProduct,
+                            category: slug || 'nouvelle-categorie',
+                            category_label: val,
+                          });
+                        }}
+                        placeholder="Tapez le nom de la nouvelle catégorie (ex: Mobilier Urbain)..."
+                        style={{
+                          width: '100%',
+                          padding: '10px 12px',
+                          borderRadius: '8px',
+                          border: '2px solid #004B93',
+                          fontSize: '14px',
+                          backgroundColor: '#f8fafc',
+                          boxSizing: 'border-box',
+                        }}
+                      />
+                      <div style={{ marginTop: '4px', fontSize: '11px', color: '#64748b' }}>
+                        Nouvelle catégorie : <strong>{customCategoryInput || '(En attente de saisie...)'}</strong>
+                        {activeProduct.category && customCategoryInput ? ` (clé : ${activeProduct.category})` : ''}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Capacité / Litrage */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>
+                    Capacité / Litrage
+                  </label>
+                  <input
+                    type="text"
+                    value={activeProduct.capacity || ''}
+                    onChange={(e) => setActiveProduct({ ...activeProduct, capacity: e.target.value })}
+                    placeholder="Ex: 120 L, 240 L, 660 L"
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid #cbd5e1',
+                      fontSize: '14px',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+
+                {/* Matière */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>
+                    Matière de fabrication
+                  </label>
+                  <input
+                    type="text"
+                    value={activeProduct.material || ''}
+                    onChange={(e) => setActiveProduct({ ...activeProduct, material: e.target.value })}
+                    placeholder="Ex: 100% Polyéthylène Haute Densité (PEHD) vierge"
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid #cbd5e1',
+                      fontSize: '14px',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+
+                {/* Dimensions */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>
+                    Dimensions (L × l × H)
+                  </label>
+                  <input
+                    type="text"
+                    value={activeProduct.dimensions || ''}
+                    onChange={(e) => setActiveProduct({ ...activeProduct, dimensions: e.target.value })}
+                    placeholder="Ex: 560 × 480 × 930 mm"
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid #cbd5e1',
+                      fontSize: '14px',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+
+                {/* Prix & MOQ */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>
+                    Prix indicatif &amp; MOQ
+                  </label>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <input
+                      type="text"
+                      value={activeProduct.indicative_price || ''}
+                      onChange={(e) => setActiveProduct({ ...activeProduct, indicative_price: e.target.value })}
+                      placeholder="Prix (ex: $21.50 / pc)"
+                      style={{
+                        flex: 1,
+                        padding: '10px 12px',
+                        borderRadius: '8px',
+                        border: '1px solid #cbd5e1',
+                        fontSize: '14px',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                    <input
+                      type="text"
+                      value={activeProduct.moq || ''}
+                      onChange={(e) => setActiveProduct({ ...activeProduct, moq: e.target.value })}
+                      placeholder="MOQ (ex: 50 pcs)"
+                      style={{
+                        flex: 1,
+                        padding: '10px 12px',
+                        borderRadius: '8px',
+                        border: '1px solid #cbd5e1',
+                        fontSize: '14px',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>
+                  Description commerciale
+                </label>
+                <textarea
+                  rows={3}
+                  value={activeProduct.description || ''}
+                  onChange={(e) => setActiveProduct({ ...activeProduct, description: e.target.value })}
+                  placeholder="Détails du produit, usages recommandés..."
+                  style={{
+                    width: '100%',
+                    padding: '10px 12px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '14px',
+                    fontFamily: 'inherit',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              {/* Image & Téléversement Supabase Storage */}
+              <div style={{
+                backgroundColor: '#f8fafc',
+                border: '1px dashed #cbd5e1',
+                borderRadius: '10px',
+                padding: '16px',
+                marginBottom: '20px',
+              }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#0f172a', marginBottom: '8px' }}>
+                  Photo du Produit (Hébergée sur Supabase Storage)
+                </label>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                  {/* Aperçu */}
+                  <div style={{
+                    width: '80px',
+                    height: '80px',
+                    backgroundColor: '#ffffff',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    flexShrink: 0,
+                  }}>
+                    {activeProduct.image ? (
+                      <Image
+                        src={activeProduct.image}
+                        alt="Aperçu"
+                        fill
+                        sizes="80px"
+                        style={{ objectFit: 'contain', padding: '4px' }}
+                      />
+                    ) : (
+                      <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
+                        <Package size={24} />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Contrôles d'upload */}
+                  <div style={{ flex: 1, minWidth: '220px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                      <label style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        backgroundColor: '#004B93',
+                        color: '#ffffff',
+                        padding: '8px 14px',
+                        borderRadius: '6px',
+                        fontSize: '13px',
+                        fontWeight: 600,
+                        cursor: isUploadingImage ? 'not-allowed' : 'pointer',
+                        opacity: isUploadingImage ? 0.7 : 1,
+                      }}>
+                        {isUploadingImage ? (
+                          <>
+                            <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} />
+                            <span>Téléversement en cours...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Upload size={15} />
+                            <span>Choisir une photo</span>
+                          </>
+                        )}
+                        <input
+                          type="file"
+                          accept="image/png,image/jpeg,image/webp"
+                          disabled={isUploadingImage}
+                          onChange={handleImageUpload}
+                          style={{ display: 'none' }}
+                        />
+                      </label>
+
+                      <span style={{ fontSize: '12px', color: '#64748b' }}>
+                        PNG, JPG ou WEBP (max 5 Mo)
+                      </span>
+                    </div>
+
+                    {uploadError && (
+                      <div style={{ color: '#dc2626', fontSize: '12px', marginTop: '4px' }}>
+                        {uploadError}
+                      </div>
+                    )}
+
+                    <input
+                      type="text"
+                      value={activeProduct.image || ''}
+                      onChange={(e) => setActiveProduct({ ...activeProduct, image: e.target.value })}
+                      placeholder="Ou collez directement l'URL d'une image"
+                      style={{
+                        width: '100%',
+                        padding: '8px 10px',
+                        borderRadius: '6px',
+                        border: '1px solid #cbd5e1',
+                        fontSize: '12px',
+                        color: '#475569',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Boutons d'Action */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', paddingTop: '12px', borderTop: '1px solid #e2e8f0' }}>
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  style={{
+                    padding: '10px 18px',
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #cbd5e1',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    color: '#475569',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Annuler
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={isSaving}
+                  style={{
+                    padding: '10px 22px',
+                    backgroundColor: '#059669',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    cursor: isSaving ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    opacity: isSaving ? 0.7 : 1,
+                  }}
+                >
+                  {isSaving ? (
+                    <>
+                      <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
+                      <span>Enregistrement...</span>
+                    </>
+                  ) : (
+                    <span>{modalMode === 'create' ? 'Créer le produit' : 'Enregistrer les modifications'}</span>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL DE CONFIRMATION DE SUPPRESSION */}
+      {/* ========================================================================= */}
+      {productToDelete && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: 'rgba(0,0,0,0.6)',
+          backdropFilter: 'blur(4px)',
+          zIndex: 999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+        }}>
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '14px',
+            width: '100%',
+            maxWidth: '440px',
+            padding: '24px',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+            border: '1px solid #cbd5e1',
+          }}>
+            <div style={{
+              width: '44px',
+              height: '44px',
+              borderRadius: '50%',
+              backgroundColor: 'rgba(239, 68, 68, 0.1)',
+              color: '#dc2626',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '16px',
+            }}>
+              <Trash2 size={22} />
+            </div>
+
+            <h3 style={{ fontSize: '18px', fontWeight: 700, margin: '0 0 8px', color: '#0f172a' }}>
+              Confirmer la suppression ?
+            </h3>
+            <p style={{ fontSize: '14px', color: '#64748b', margin: '0 0 20px', lineHeight: 1.4 }}>
+              Êtes-vous sûr de vouloir supprimer définitivement le produit <strong>{productToDelete.name}</strong> ({productToDelete.reference}) de Supabase ? Cette action est irréversible.
+            </p>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              <button
+                type="button"
+                onClick={() => setProductToDelete(null)}
+                disabled={isDeleting}
+                style={{
+                  padding: '9px 16px',
+                  backgroundColor: '#ffffff',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '6px',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  color: '#475569',
+                  cursor: 'pointer',
+                }}
+              >
+                Annuler
+              </button>
+
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+                style={{
+                  padding: '9px 18px',
+                  backgroundColor: '#dc2626',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  cursor: isDeleting ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  opacity: isDeleting ? 0.7 : 1,
+                }}
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
+                    <span>Suppression...</span>
+                  </>
+                ) : (
+                  <span>Oui, supprimer</span>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style jsx global>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div>
+  );
+}

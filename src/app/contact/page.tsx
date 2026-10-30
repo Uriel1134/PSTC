@@ -172,10 +172,10 @@ export default function ContactPage() {
                         value={formState.pole}
                         onChange={(e) => setFormState({ ...formState, pole: e.target.value })}
                       >
-                        <option value="techniques">Pôle 01 : Prestations Techniques (BTP, Réseaux, Solaire, Sécurité)</option>
-                        <option value="commerciales">Pôle 02 : Solutions Commerciales (Véhicules, Négoce, Agricole)</option>
-                        <option value="fournitures">Pôle 03 : Fournitures &amp; Consommables (Bureautique, Mobilier, Médical)</option>
-                        <option value="environnement">Pôle 04 : Gestion Environnementale (Salubrité, Bacs EN 840, EPI)</option>
+                        <option value="techniques">Pôle 01 : Prestations Techniques</option>
+                        <option value="commerciales">Pôle 02 : Solutions Commerciales</option>
+                        <option value="fournitures">Pôle 03 : Fournitures &amp; Consommables</option>
+                        <option value="environnement">Pôle 04 : Gestion Environnementale</option>
                         <option value="autre">Autre demande générale</option>
                       </select>
                     </div>

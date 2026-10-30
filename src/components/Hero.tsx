@@ -113,7 +113,8 @@ export default function Hero({ onOpenQuoteDrawer }: HeroProps) {
               </div>
             </a>
 
-            {/* Carte 3 : Santé & DASRI */}
+            {/* Carte 3 : Santé & DASRI - Masqué sur demande */}
+            {/*
             <a href="#catalogue" className="docked-card">
               <div className="docked-card-content">
                 <span className="docked-card-category">Milieu Hospitalier</span>
@@ -133,6 +134,7 @@ export default function Hero({ onOpenQuoteDrawer }: HeroProps) {
                 />
               </div>
             </a>
+            */}
 
             {/* Carte 4 : EPI */}
             <a href="#catalogue" className="docked-card">

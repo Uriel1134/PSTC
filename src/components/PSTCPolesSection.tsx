@@ -92,8 +92,7 @@ const POLES: PoleItem[] = [
     domains: [
       'Hygiène & Produits d’Entretien',
       'Entretien & Nettoyage de Bâtiments',
-      'Poubelles, Bacs & Conteneurs EN 840',
-      'Tri Sélectif RSE & DASRI',
+      'Bacs Roulants, Conteneurs & Tri Sélectif',
       'Collecte & Salubrité',
     ],
   },

@@ -141,11 +141,11 @@ export default function PrestationsTechniquesPage() {
                   className="btn-corp-primary"
                 >
                   <MessageCircle size={17} />
-                  <span>Demander un Devis Technique (WhatsApp)</span>
+                  <span>Devis Technique via WhatsApp</span>
                 </a>
                 <a href={`tel:${COMPANY_INFO.phoneCommercial}`} className="btn-corp-outline-call">
                   <Phone size={16} />
-                  <span>Assistance Chantier : {COMPANY_INFO.phoneCommercial}</span>
+                  <span>Tél : {COMPANY_INFO.phoneCommercial}</span>
                 </a>
               </div>
             </div>

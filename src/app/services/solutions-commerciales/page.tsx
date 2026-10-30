@@ -110,11 +110,11 @@ export default function SolutionsCommercialesPage() {
                   className="btn-corp-primary"
                 >
                   <MessageCircle size={17} />
-                  <span>Demander une Cotation (WhatsApp)</span>
+                  <span>Cotation Commerciale via WhatsApp</span>
                 </a>
                 <a href={`tel:${COMPANY_INFO.phoneCommercial}`} className="btn-corp-outline-call">
                   <Phone size={16} />
-                  <span>Direction Commerciale : {COMPANY_INFO.phoneCommercial}</span>
+                  <span>Tél : {COMPANY_INFO.phoneCommercial}</span>
                 </a>
               </div>
             </div>

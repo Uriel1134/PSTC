@@ -27,6 +27,7 @@ import QuoteDrawer from '../../components/QuoteDrawer';
 import { PRODUCTS, CATEGORIES, Product } from '../../data/products';
 import { COMPANY_INFO } from '../../data/company';
 import { useQuote } from '../../context/QuoteContext';
+import { supabase } from '../../lib/supabase';
 
 type GammeScope = 'all' | 'ecobin' | 'epi';
 
@@ -37,8 +38,7 @@ const isPoubelleCategory = (cat: string) =>
   cat === 'bacs-2-roues' ||
   cat === 'conteneurs-4-roues' ||
   cat === 'tri-selectif' ||
-  cat === 'interieur-bureau' ||
-  cat === 'medical-dasri';
+  cat === 'interieur-bureau';
 
 export default function CataloguePage() {
   const {
@@ -57,10 +57,49 @@ export default function CataloguePage() {
   const [gammeScope, setGammeScope] = useState<GammeScope>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [selectedStandard, setSelectedStandard] = useState<string>('all');
   const [selectedVolume, setSelectedVolume] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('default');
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState<boolean>(false);
+  const [productList, setProductList] = useState<Product[]>(PRODUCTS);
+
+  // Charger les produits dynamiques depuis Supabase (avec fallback statique instantané)
+  useEffect(() => {
+    async function loadLiveProducts() {
+      try {
+        const { data, error } = await supabase.from('products').select('*');
+        if (!error && data && data.length > 0) {
+          const mapped: Product[] = data.map((p: any) => ({
+            id: p.id,
+            reference: p.reference,
+            supplierRef: p.supplier_ref || undefined,
+            name: p.name,
+            category: p.category === 'medical-dasri' ? 'interieur-bureau' : p.category,
+            categoryLabel:
+              p.category_label === 'Bacs Médicaux & DASRI'
+                ? 'Poubelles Intérieur & Sanitaire'
+                : (p.category_label || p.category),
+            capacity: p.capacity || undefined,
+            availableSizes: p.available_sizes || undefined,
+            dimensions: p.dimensions || '-',
+            material: p.material || 'Standard',
+            weight: p.weight || undefined,
+            moq: p.moq || undefined,
+            indicativePrice: p.indicative_price || undefined,
+            colors: Array.isArray(p.colors) ? p.colors : [],
+            description: p.description || '',
+            applications: Array.isArray(p.applications) ? p.applications : [],
+            features: Array.isArray(p.features) ? p.features : [],
+            standard: p.standard || undefined,
+            image: p.image || '/images/products/conteneur-4-roues-vert.png',
+          }));
+          setProductList(mapped);
+        }
+      } catch (err) {
+        console.warn('Fallback catalogue local statique actif:', err);
+      }
+    }
+    loadLiveProducts();
+  }, []);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -108,53 +147,72 @@ export default function CataloguePage() {
   };
 
   const totalEcobin = useMemo(
-    () => PRODUCTS.filter((p) => !isEpiCategory(p.category)).length,
-    []
+    () => productList.filter((p) => !isEpiCategory(p.category)).length,
+    [productList]
   );
   const totalEpi = useMemo(
-    () => PRODUCTS.filter((p) => isEpiCategory(p.category)).length,
-    []
+    () => productList.filter((p) => isEpiCategory(p.category)).length,
+    [productList]
   );
+
+  // Liste unifiée des catégories (base statique + catégories créées dynamiquement dans Supabase)
+  const dynamicCatalogueCategories = useMemo(() => {
+    const list: { id: string; label: string }[] = CATEGORIES.filter(
+      (c) => c.id !== 'all' && (c as any).id !== 'medical-dasri'
+    ).map((c) => ({
+      id: c.id as string,
+      label: c.label as string,
+    }));
+    productList.forEach((p) => {
+      if (p.category && p.category !== 'medical-dasri' && !list.some((c) => c.id === p.category)) {
+        list.push({
+          id: p.category,
+          label: p.categoryLabel || p.category,
+        });
+      }
+    });
+    return list;
+  }, [productList]);
 
   const displayedCategories = useMemo(() => {
     if (gammeScope === 'epi') {
-      const epiCats = CATEGORIES.filter((c) => isEpiCategory(c.id));
+      const epiCats = dynamicCatalogueCategories.filter((c) => isEpiCategory(c.id));
       return [
         { id: 'all', label: 'Tous les EPI & Sécurité', count: totalEpi },
         ...epiCats.map((c) => ({
           id: c.id,
           label: c.label,
-          count: PRODUCTS.filter((p) => p.category === c.id).length,
+          count: productList.filter((p) => p.category === c.id).length,
         })),
       ];
     }
     if (gammeScope === 'ecobin') {
-      const ecobinCats = CATEGORIES.filter((c) => c.id !== 'all' && !isEpiCategory(c.id));
+      const ecobinCats = dynamicCatalogueCategories.filter((c) => !isEpiCategory(c.id));
       return [
         { id: 'all', label: 'Toutes les références ECOBIN', count: totalEcobin },
         ...ecobinCats.map((c) => ({
           id: c.id,
           label: c.label,
-          count: PRODUCTS.filter((p) => p.category === c.id).length,
+          count: productList.filter((p) => p.category === c.id).length,
         })),
       ];
     }
-    const nonEpi = CATEGORIES.filter((c) => c.id !== 'all' && !isEpiCategory(c.id));
-    const epi = CATEGORIES.filter((c) => isEpiCategory(c.id));
+    const nonEpi = dynamicCatalogueCategories.filter((c) => !isEpiCategory(c.id));
+    const epi = dynamicCatalogueCategories.filter((c) => isEpiCategory(c.id));
     return [
-      { id: 'all', label: 'Toutes les catégories', count: PRODUCTS.length },
+      { id: 'all', label: 'Toutes les catégories', count: productList.length },
       ...nonEpi.map((c) => ({
         id: c.id,
         label: c.label,
-        count: PRODUCTS.filter((p) => p.category === c.id).length,
+        count: productList.filter((p) => p.category === c.id).length,
       })),
       ...epi.map((c) => ({
         id: c.id,
         label: c.label,
-        count: PRODUCTS.filter((p) => p.category === c.id).length,
+        count: productList.filter((p) => p.category === c.id).length,
       })),
     ];
-  }, [gammeScope, totalEcobin, totalEpi]);
+  }, [gammeScope, totalEcobin, totalEpi, productList, dynamicCatalogueCategories]);
 
   const quoteItemIds = useMemo(() => quoteItems.map((item) => item.product.id), [quoteItems]);
 
@@ -167,7 +225,7 @@ export default function CataloguePage() {
 
   // Filtrage combiné (gamme + catégorie + recherche + norme + volume)
   const filteredProducts = useMemo(() => {
-    return PRODUCTS.filter((product) => {
+    return productList.filter((product) => {
       // 0. Filtrage par Gamme (ECOBIN vs EPI vs ALL)
       const isEpi = isEpiCategory(product.category);
       if (gammeScope === 'epi' && !isEpi) {
@@ -204,19 +262,7 @@ export default function CataloguePage() {
         if (!matchQuery) return false;
       }
 
-      // 3. Norme
-      if (selectedStandard === 'en-840') {
-        if (!product.standard || !product.standard.includes('EN 840')) return false;
-      } else if (selectedStandard === 'dasri') {
-        const isDasri =
-          product.category === 'medical-dasri' ||
-          (!!product.standard && product.standard.toLowerCase().includes('dasri'));
-        if (!isDasri) return false;
-      } else if (selectedStandard === 'ce') {
-        if (!product.standard || !product.standard.includes('CE')) return false;
-      }
-
-      // 4. Volume / Capacité
+      // Volume / Capacité
       if (selectedVolume !== 'all') {
         const volNum = getCapacityNumber(product.capacity);
         if (selectedVolume === 'small' && !(volNum > 0 && volNum <= 100)) return false;
@@ -226,7 +272,7 @@ export default function CataloguePage() {
 
       return true;
     });
-  }, [gammeScope, selectedCategory, searchQuery, selectedStandard, selectedVolume]);
+  }, [gammeScope, selectedCategory, searchQuery, selectedVolume]);
 
   // Tri des produits filtrés
   const sortedProducts = useMemo(() => {
@@ -255,13 +301,11 @@ export default function CataloguePage() {
   const hasActiveFilters =
     selectedCategory !== 'all' ||
     searchQuery.trim() !== '' ||
-    selectedStandard !== 'all' ||
     selectedVolume !== 'all';
 
   const resetAllFilters = () => {
     setSelectedCategory('all');
     setSearchQuery('');
-    setSelectedStandard('all');
     setSelectedVolume('all');
     setSortBy('default');
   };
@@ -280,7 +324,7 @@ export default function CataloguePage() {
 
   const activeCategoryObject = useMemo(() => {
     if (selectedCategory === 'hygiene') {
-      const hygieneCount = PRODUCTS.filter(
+      const hygieneCount = productList.filter(
         (p) => p.category === 'materiel-nettoyage' || p.category === 'hygiene-sanitaire'
       ).length;
       return {
@@ -290,7 +334,7 @@ export default function CataloguePage() {
       };
     }
     if (selectedCategory === 'poubelles') {
-      const poubellesCount = PRODUCTS.filter((p) => isPoubelleCategory(p.category)).length;
+      const poubellesCount = productList.filter((p) => isPoubelleCategory(p.category)).length;
       return {
         id: 'poubelles',
         label: 'Toutes les Poubelles, Bacs & Conteneurs',
@@ -298,7 +342,7 @@ export default function CataloguePage() {
       };
     }
     return displayedCategories.find((c) => c.id === selectedCategory);
-  }, [displayedCategories, selectedCategory]);
+  }, [displayedCategories, selectedCategory, productList]);
 
   return (
     <>
@@ -339,14 +383,14 @@ export default function CataloguePage() {
                     ? "Consultez l'ensemble de nos références EPI certifiées CE & EN : casques de chantier, gilets et vêtements haute visibilité, gants de précision et anticoupure, chaussures de sécurité et équipements de signalisation d'urgence."
                     : gammeScope === 'ecobin'
                     ? "Consultez nos références professionnelles de gestion des déchets et salubrité : bacs roulants 2 et 4 roues normalisés EN 840 (80L à 1100L), conteneurs lourds, stations de tri sélectif, fûts DASRI, poubelles d'intérieur et matériels d'hygiène urbaine."
-                    : `Consultez nos ${PRODUCTS.length} références professionnelles : bacs roulants 2 et 4 roues (80L à 1100L), bornes de tri sélectif, fûts DASRI sécurisés, matériels de nettoyage et équipements de protection individuelle (EPI).`}
+                    : `Consultez nos ${productList.length} références professionnelles : bacs roulants 2 et 4 roues (80L à 1100L), bornes de tri sélectif, fûts DASRI sécurisés, matériels de nettoyage et équipements de protection individuelle (EPI).`}
                 </p>
               </div>
 
               <div className="catalog-hero-cta-box">
                 <div className="catalog-hero-stat">
                   <span className="stat-number">
-                    {gammeScope === 'epi' ? totalEpi : gammeScope === 'ecobin' ? totalEcobin : PRODUCTS.length}
+                    {gammeScope === 'epi' ? totalEpi : gammeScope === 'ecobin' ? totalEcobin : productList.length}
                   </span>
                   <span className="stat-text">
                     {gammeScope === 'epi'
@@ -407,7 +451,7 @@ export default function CataloguePage() {
                 >
                   <Sparkles size={16} />
                   <span>Toutes les Gammes</span>
-                  <span className="gamme-pill-badge">{PRODUCTS.length}</span>
+                  <span className="gamme-pill-badge">{productList.length}</span>
                 </button>
               </div>
             </div>
@@ -483,50 +527,7 @@ export default function CataloguePage() {
                     </ul>
                   </div>
 
-                  {/* 3. Filtre par Norme / Certification */}
-                  <div className="sidebar-widget">
-                    <h3 className="sidebar-widget-title">Normes & Spécifications</h3>
-                    <div className="sidebar-filter-options">
-                      <label className="sidebar-filter-radio">
-                        <input
-                          type="radio"
-                          name="filter-standard"
-                          checked={selectedStandard === 'all'}
-                          onChange={() => setSelectedStandard('all')}
-                        />
-                        <span>Toutes les normes</span>
-                      </label>
-                      <label className="sidebar-filter-radio">
-                        <input
-                          type="radio"
-                          name="filter-standard"
-                          checked={selectedStandard === 'en-840'}
-                          onChange={() => setSelectedStandard('en-840')}
-                        />
-                        <span>Certifié EN 840 (Voirie)</span>
-                      </label>
-                      <label className="sidebar-filter-radio">
-                        <input
-                          type="radio"
-                          name="filter-standard"
-                          checked={selectedStandard === 'dasri'}
-                          onChange={() => setSelectedStandard('dasri')}
-                        />
-                        <span>DASRI / Médical Hygiène</span>
-                      </label>
-                      <label className="sidebar-filter-radio">
-                        <input
-                          type="radio"
-                          name="filter-standard"
-                          checked={selectedStandard === 'ce'}
-                          onChange={() => setSelectedStandard('ce')}
-                        />
-                        <span>Marquage CE / EPI</span>
-                      </label>
-                    </div>
-                  </div>
-
-                  {/* 4. Filtre par Litrage */}
+                  {/* Filtre par Litrage */}
                   <div className="sidebar-widget">
                     <h3 className="sidebar-widget-title">Litrage & Volume</h3>
                     <div className="sidebar-filter-options">
@@ -672,17 +673,6 @@ export default function CataloguePage() {
                         </button>
                       </span>
                     )}
-                    {selectedStandard !== 'all' && (
-                      <span className="active-filter-tag">
-                        Norme : {selectedStandard.toUpperCase()}
-                        <button
-                          onClick={() => setSelectedStandard('all')}
-                          title="Supprimer le filtre norme"
-                        >
-                          <X size={12} />
-                        </button>
-                      </span>
-                    )}
                     {selectedVolume !== 'all' && (
                       <span className="active-filter-tag">
                         Volume : {selectedVolume}
@@ -737,9 +727,6 @@ export default function CataloguePage() {
                                 <span>Tailles :</span>
                                 <span style={{ color: '#86EFAC' }}>{product.availableSizes}</span>
                               </div>
-                            )}
-                            {product.standard && (
-                              <div className="product-norm-badge">{product.standard}</div>
                             )}
                           </div>
 

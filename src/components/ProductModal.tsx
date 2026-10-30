@@ -73,30 +73,24 @@ export default function ProductModal({
           </div>
           <button
             onClick={onClose}
-            className="drawer-close-btn"
-            style={{ color: 'var(--slate-500)' }}
+            className="modal-close-btn"
             aria-label="Fermer la fiche produit"
           >
-            <X size={24} />
+            <X size={22} />
           </button>
         </div>
 
         <div className="modal-body">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 28, marginBottom: 28 }}>
+          <div className="product-modal-top-grid">
             {/* Visuel du Produit */}
-            <div style={{ position: 'relative', height: '280px', borderRadius: 'var(--radius-lg)', overflow: 'hidden', border: '1px solid var(--slate-200)', backgroundColor: 'var(--slate-50)' }}>
+            <div className="product-modal-image-col">
               <Image
                 src={product.image || '/images/bac-240l.jpg'}
                 alt={product.name}
                 fill
                 sizes="(max-width: 768px) 100vw, 400px"
-                style={{ objectFit: 'contain', padding: 12 }}
+                style={{ objectFit: 'contain', padding: 16 }}
               />
-              {product.standard && (
-                <div className="product-norm-badge" style={{ position: 'absolute', top: 12, right: 12 }}>
-                  {product.standard}
-                </div>
-              )}
               {product.availableSizes && (
                 <div style={{
                   position: 'absolute',
@@ -120,8 +114,8 @@ export default function ProductModal({
             </div>
 
             {/* Fiche Technique Détaillée */}
-            <div>
-              <p style={{ fontSize: '0.95rem', color: 'var(--slate-700)', lineHeight: 1.6, marginBottom: 18 }}>
+            <div className="product-modal-info-col">
+              <p className="product-modal-desc">
                 {product.description}
               </p>
 
@@ -162,14 +156,6 @@ export default function ProductModal({
                   </span>
                   <span className="spec-value" style={{ maxWidth: '60%' }}>{product.material}</span>
                 </div>
-                {product.standard && (
-                  <div className="spec-row">
-                    <span className="spec-name" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                      <ShieldCheck size={14} /> Homologation
-                    </span>
-                    <span className="spec-value" style={{ color: 'var(--pstc-green-700)' }}>{product.standard}</span>
-                  </div>
-                )}
                 {product.moq && (
                   <div className="spec-row">
                     <span className="spec-name">Conditionnement B2B</span>
@@ -201,10 +187,10 @@ export default function ProductModal({
           </div>
 
           {/* Caractéristiques et Applications */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, borderTop: '1px solid var(--slate-200)', paddingTop: 20, marginBottom: 28 }}>
+          <div className="product-modal-features-grid">
             <div>
               <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--slate-900)', textTransform: 'uppercase', marginBottom: 10 }}>
-                Points Forts & Équipements
+                Points Forts &amp; Équipements
               </h4>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {product.features.map((feat, i) => (
@@ -232,8 +218,8 @@ export default function ProductModal({
           </div>
 
           {/* Action d'ajout au devis */}
-          <div style={{ borderTop: '1px solid var(--slate-200)', paddingTop: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div className="product-modal-footer">
+            <div className="product-modal-qty-wrap">
               <span style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--slate-700)' }}>
                 Quantité souhaitée :
               </span>
@@ -241,6 +227,7 @@ export default function ProductModal({
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   className="qty-btn"
+                  aria-label="Diminuer la quantité"
                 >
                   -
                 </button>
@@ -248,17 +235,18 @@ export default function ProductModal({
                 <button
                   onClick={() => setQuantity(quantity + 1)}
                   className="qty-btn"
+                  aria-label="Augmenter la quantité"
                 >
                   +
                 </button>
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: 12 }}>
+            <div className="product-modal-actions-wrap">
               <button onClick={onClose} className="btn btn-outline btn-sm">
                 Fermer
               </button>
-              <button onClick={handleAdd} className="btn btn-primary">
+              <button onClick={handleAdd} className="btn btn-primary product-modal-btn-add">
                 <ShoppingCart size={18} />
                 <span>{isAlreadyInQuote ? 'Actualiser le Devis' : 'Insérer dans le Devis Proforma'}</span>
               </button>

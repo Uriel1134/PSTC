@@ -65,28 +65,17 @@ export default function GestionEnvironnementalePage() {
       ],
     },
     {
-      id: 'poubelles-bacs',
-      title: 'Poubelles & Bacs Roulants de Collecte',
-      subtitle: 'Conformité stricte à la norme européenne EN 840',
-      image: '/images/products/conteneur-4-roues-vert.png',
+      id: 'bacs-conteneurs-tri',
+      title: 'Bacs Roulants, Conteneurs & Tri Sélectif',
+      subtitle: 'Gamme ECOBIN normalisée EN 840 • Stations 3 à 5 flux & valorisation RSE',
+      image: '/images/bacs-conteneurs-tri-ecobin.jpg',
       icon: Trash2,
       points: [
         'Bacs roulants 2 roues robustes : 30L, 50L, 80L, 100L, 120L, 240L et 360L',
         'Grands conteneurs 4 roues de voirie : 660L, 770L et 1100L avec frein centralisé',
-        'Fabrication 100% Polyéthylène Haute Densité (PEHD) vierge traité anti-UV',
-        'Prises DIN renforcées compatibles avec lève-conteneurs de camions-bennes',
-      ],
-    },
-    {
-      id: 'tri-selectif',
-      title: 'Stations de Tri Sélectif Multi-Flux',
-      subtitle: 'Bornes 3 à 5 flux, codes couleurs & filière DASRI',
-      image: '/images/products/tri-5-bacs.png',
-      icon: Layers,
-      points: [
-        'Îlots et stations de tri 3, 4 et 5 flux adaptés aux bureaux et lieux publics',
-        'Codes couleurs normalisés (Bleu, Jaune, Vert, Gris, Marron) pour valorisation RSE',
-        'Poubelles hospitalières étanches à pédale pour Déchets d’Activités de Soins (DASRI)',
+        'Îlots et stations de tri sélectif 3, 4 et 5 flux adaptés aux bureaux, ERP et collectivités',
+        'Codes couleurs normalisés (Bleu, Vert, Rouge, Jaune, Noir) pour valorisation RSE',
+        'Fabrication 100% PEHD vierge traité anti-UV et prises DIN pour camions-bennes',
         'Conseil en dimensionnement et disposition stratégique des points de collecte',
       ],
     },
@@ -125,7 +114,7 @@ export default function GestionEnvironnementalePage() {
                   className="btn-corp-primary"
                 >
                   <MessageCircle size={17} />
-                  <span>Demander un Devis Salubrité (WhatsApp)</span>
+                  <span>Devis Salubrité via WhatsApp</span>
                 </a>
                 <Link href="/catalogue?category=poubelles" className="btn-corp-secondary">
                   <ShoppingCart size={16} />
@@ -133,7 +122,7 @@ export default function GestionEnvironnementalePage() {
                 </Link>
                 <a href={`tel:${COMPANY_INFO.phoneCommercial}`} className="btn-corp-outline-call">
                   <Phone size={16} />
-                  <span>{COMPANY_INFO.phoneCommercial}</span>
+                  <span>Tél : {COMPANY_INFO.phoneCommercial}</span>
                 </a>
               </div>
             </div>
@@ -145,7 +134,7 @@ export default function GestionEnvironnementalePage() {
           <div className="container">
             <div className="service-details-header">
               <h2 className="section-title">
-                Quatre Domaines d’Hygiène, Salubrité &amp; Gestion des Déchets
+                Nos Domaines d’Hygiène, Salubrité &amp; Gestion des Déchets
               </h2>
               <p className="section-subtitle">
                 Des équipements conformes aux normes internationales les plus exigeantes pour préserver vos environnements et valoriser vos engagements RSE.
@@ -196,18 +185,18 @@ export default function GestionEnvironnementalePage() {
                             style={{ backgroundColor: '#2B8A3E', color: '#ffffff' }}
                           >
                             <Sparkles size={14} />
-                            <span>Voir les produits d’hygiène &amp; entretien</span>
+                            <span>Produits Hygiène &amp; Entretien</span>
                             <ArrowRight size={14} />
                           </Link>
                         )}
-                        {(item.id === 'poubelles-bacs' || item.id === 'tri-selectif') && (
+                        {(item.id === 'poubelles-bacs' || item.id === 'tri-selectif' || item.id === 'bacs-conteneurs-tri') && (
                           <Link
                             href="/catalogue?category=poubelles"
                             className="btn-card-quote"
                             style={{ backgroundColor: '#004B93', color: '#ffffff' }}
                           >
                             <ShoppingCart size={14} />
-                            <span>Voir tout le catalogue Poubelles &amp; Conteneurs</span>
+                            <span>Catalogue Poubelles &amp; Conteneurs</span>
                             <ArrowRight size={14} />
                           </Link>
                         )}

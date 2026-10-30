@@ -7,13 +7,13 @@ import { ShoppingCart, Eye, Check, ArrowRight, Download, Filter } from 'lucide-r
 import { PRODUCTS, Product } from '../data/products';
 import { useQuote } from '../context/QuoteContext';
 
-// 8 Références phares représentatives de la gamme PSTC ECOBIN
+// Références phares représentatives de la gamme PSTC ECOBIN
 const FEATURED_IDS = [
   'poubelle-roulante-hdpe',     // Poubelle roulante 100L, 120L & 240L
   'poubelle-plastique-hdpe',    // Poubelle plastique 80L
   'conteneur-industriel-hdpe',  // Conteneur industriel 660L & 1100L
   'lh-stjt-60l',                // Poubelle de tri 60L
-  'lh-jt-15l',                  // Poubelle Médicale DASRI 15L
+  'lh-jt-15l',                  // Poubelle à Pédale 15L
   'lh-sac-pro',                 // Sac poubelle PE
   'epi-ja',                     // Gilet Haute Visibilité EPI
   'epi-casque-h01-bleu',        // Casque de Sécurité Chantier
@@ -23,7 +23,7 @@ const TABS = [
   { id: 'all', label: 'Toute la sélection (8)' },
   { id: 'bacs', label: 'Bacs Roulants 2 & 4 Roues' },
   { id: 'tri', label: 'Tri Sélectif & Propreté' },
-  { id: 'medical', label: 'Santé & DASRI' },
+  // { id: 'medical', label: 'Santé & DASRI' },
   { id: 'epi', label: 'EPI & Sécurité' },
 ];
 

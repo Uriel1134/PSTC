@@ -166,11 +166,11 @@ export default function FournituresConsommablesPage() {
                   className="btn-corp-primary"
                 >
                   <MessageCircle size={17} />
-                  <span>Demander un Bordereau de Prix (WhatsApp)</span>
+                  <span>Bordereau de Prix via WhatsApp</span>
                 </a>
                 <a href={`tel:${COMPANY_INFO.phoneCommercial}`} className="btn-corp-outline-call">
                   <Phone size={16} />
-                  <span>Conseil Achats : {COMPANY_INFO.phoneCommercial}</span>
+                  <span>Tél : {COMPANY_INFO.phoneCommercial}</span>
                 </a>
               </div>
             </div>
