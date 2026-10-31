@@ -98,8 +98,13 @@ export default function Footer() {
             <div className="footer-contact-item">
               <Phone size={18} />
               <div>
-                <strong>Commandes & Devis B2B :</strong><br />
-                {COMPANY_INFO.phoneCommercial}
+                <strong>Commandes &amp; Devis B2B :</strong><br />
+                <a
+                  href={`tel:${COMPANY_INFO.phoneCommercial.replace(/\s+/g, '')}`}
+                  className="footer-contact-link"
+                >
+                  {COMPANY_INFO.phoneCommercial}
+                </a>
               </div>
             </div>
 
@@ -107,7 +112,10 @@ export default function Footer() {
               <Mail size={18} />
               <div>
                 <strong>Courriel Officiel :</strong><br />
-                <a href={`mailto:${COMPANY_INFO.emailCommercial}`} style={{ color: '#E2E8F0', textDecoration: 'underline' }}>
+                <a
+                  href={`mailto:${COMPANY_INFO.emailCommercial}`}
+                  className="footer-contact-link"
+                >
                   {COMPANY_INFO.emailCommercial}
                 </a>
               </div>

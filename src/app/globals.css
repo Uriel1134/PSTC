@@ -2602,6 +2602,17 @@ img {
   margin-top: 3px;
 }
 
+.footer-contact-link {
+  color: #E2E8F0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
+}
+
+.footer-contact-link:hover {
+  color: #4ADE80;
+}
+
 .footer-bottom {
   border-top: 1px solid var(--slate-800);
   padding-top: 28px;

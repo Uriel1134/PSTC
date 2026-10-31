@@ -29,8 +29,8 @@ export interface CustomerReview {
 const DEFAULT_REVIEWS: CustomerReview[] = [
   {
     id: 'rev-1',
-    name: 'Sylvain AGBOSSOU',
-    company: 'Mairie & Collectivité Régionale',
+    name: 'Sylvain M.',
+    company: 'Collectivité Territoriale Régionale',
     role: 'Directeur des Services Techniques',
     pole: 'PSTC ECOBIN & Salubrité',
     rating: 5,
@@ -40,8 +40,8 @@ const DEFAULT_REVIEWS: CustomerReview[] = [
   },
   {
     id: 'rev-2',
-    name: 'Dr. Nadine HOUNGBO',
-    company: 'Polyclinique Privée Cotonou',
+    name: 'Dr. Valérie K.',
+    company: 'Polyclinique de l’Étoile',
     role: 'Directrice Médicale & Hygiène',
     pole: 'Filière DASRI & Hygiène Médicale',
     rating: 5,
@@ -51,8 +51,8 @@ const DEFAULT_REVIEWS: CustomerReview[] = [
   },
   {
     id: 'rev-3',
-    name: 'Ing. Rodrigue TOSSOU',
-    company: 'Entreprise Générale de BTP',
+    name: 'Ing. Stéphane B.',
+    company: 'Consortium BTP & Travaux Publics',
     role: 'Chef de Projet Génie Civil',
     pole: 'Prestations Techniques & BTP',
     rating: 5,
@@ -62,8 +62,8 @@ const DEFAULT_REVIEWS: CustomerReview[] = [
   },
   {
     id: 'rev-4',
-    name: 'Carine DOSSOU-YOVO',
-    company: 'Cabinet d’Audit & Conseil Financier',
+    name: 'Carine D.',
+    company: 'Cabinet Conseil & Audit d’Affaires',
     role: 'Responsable Moyens Généraux',
     pole: 'Fournitures & Consommables B2B',
     rating: 5,
@@ -73,7 +73,7 @@ const DEFAULT_REVIEWS: CustomerReview[] = [
   },
   {
     id: 'rev-5',
-    name: 'Marc HOUNWANOU',
+    name: 'Marc L.',
     company: 'Complexe Hôtelier & Résidences',
     role: 'Directeur d’Exploitation',
     pole: 'PSTC ECOBIN - Tri Sélectif RSE',
@@ -84,8 +84,8 @@ const DEFAULT_REVIEWS: CustomerReview[] = [
   },
   {
     id: 'rev-6',
-    name: 'Faustin ADANMINAKOU',
-    company: 'Société de Négoce & Transit Portuaire',
+    name: 'Faustin K.',
+    company: 'Société de Négoce & Transit Maritime',
     role: 'Responsable Logistique & Achat',
     pole: 'Solutions Commerciales & EPI',
     rating: 4.8,
@@ -95,7 +95,7 @@ const DEFAULT_REVIEWS: CustomerReview[] = [
   },
 ];
 
-const LOCAL_STORAGE_KEY = 'pstc_customer_reviews_v1';
+const LOCAL_STORAGE_KEY = 'pstc_customer_reviews_v2';
 
 export default function CustomerReviewsSection() {
   const [reviews, setReviews] = useState<CustomerReview[]>(DEFAULT_REVIEWS);
@@ -493,7 +493,7 @@ export default function CustomerReviewsSection() {
                       id="rev-name"
                       type="text"
                       className="form-input"
-                      placeholder="Ex: Ing. Sylvain TOSSOU"
+                      placeholder="Ex: Paul M. / Directeur Technique"
                       value={formName}
                       onChange={(e) => setFormName(e.target.value)}
                       required
